@@ -2,22 +2,10 @@
 #include "Game_Global.h"
 class GMessageQueue
 {
+	friend class autodelete;//自动销毁
 private:
 	//唯一实例化对象,编译期确定
 	static GMessageQueue* Instance;
-	//程序结束自动销毁
-	class autodelete {
-	public:
-		~autodelete()
-		{
-			cout << "\nwwww\n";
-			if (GMessageQueue::Instance)
-			{
-				delete GMessageQueue::Instance;
-				GMessageQueue::Instance = nullptr;
-			}
-		}
-	}Killer;
 private:
 	//防止意外的修改对象
 	GMessageQueue()

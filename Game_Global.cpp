@@ -33,3 +33,27 @@ G_MsgInfo GMessageQueue::PopMsg()
 {
 	return { GMType::NOP };
 }
+
+class autodelete {
+public:
+	~autodelete()
+	{
+		//自动析构3大全局变量
+		if (GInput)
+		{
+			delete GInput;
+			GListener::Instance = nullptr;
+		}
+		if (GOutput)
+		{
+			delete GOutput;
+			GListener::Instance = nullptr;
+		}
+		if (GMsg)
+		{
+			delete GMsg;
+			GListener::Instance = nullptr;
+		}
+
+	}
+}const Killer = autodelete();

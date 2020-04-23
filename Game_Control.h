@@ -38,6 +38,7 @@ public:
 				//状态更新后才调用Paint,避免刷新率过快产生闪烁
 				Render();
 			}
+			break;
 		}
 		
 		//释放资源

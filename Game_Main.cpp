@@ -3,6 +3,7 @@
 int main(void)
 {
 	GControl test;
+
 	test.OnLoad();
 	return 0;
 }

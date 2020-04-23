@@ -3,21 +3,10 @@
 //处理输出请求,封装为一个全局API
 class GTalker
 {
+	friend class autodelete;//自动销毁
 private:
 	//唯一实例化对象,编译期确定
 	static GTalker* Instance;
-	//程序结束自动销毁
-	class autodelete {
-	public:
-		~autodelete()
-		{
-			if (GTalker::Instance)
-			{
-				delete GTalker::Instance;
-				GTalker::Instance = nullptr;
-			}
-		}
-	}Killer;
 private:
 	//防止意外的修改对象
 	GTalker()

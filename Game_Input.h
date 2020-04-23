@@ -4,22 +4,10 @@
 //处理用户输入,封装为一个全局API
 class GListener
 {
+	friend class autodelete;//自动销毁
 private:
 	//唯一实例化对象,编译期确定
 	static GListener* Instance;
-	//程序结束自动销毁
-	class autodelete {
-	public:
-		~autodelete()
-		{
-			cout << "\nwwww\n";
-			if (GListener::Instance)
-			{
-				delete GListener::Instance;
-				GListener::Instance = nullptr;
-			}
-		}
-	}Killer;
 private:
 	//防止意外的修改对象
 	GListener()
