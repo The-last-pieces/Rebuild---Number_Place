@@ -4,6 +4,12 @@
 //有自动求所有解, 自动生成, 自动提示功能
 class GMap
 {
+	//用于GMap的序列化
+	const char AngleChar = '*';
+	const char HorizonChar = '-';
+	const char VerticalChar = '|';
+	const char BlockChar = 'N';
+
 private:
 	static const size_t Map_Size = 9;
 	GStatus Pmode;
@@ -57,7 +63,7 @@ private:
 	}
 	bool InArea(GPoint point)
 	{
-		return !(point.x < 0 || point.y < 0 || point.x >= Size() || point.y >= Size());
+		return !(point.Vertical < 0 || point.Horizontal < 0 || point.Vertical >= Size() || point.Horizontal >= Size());
 	}
 public:
 
@@ -70,7 +76,7 @@ public:
 			cout << "\nGMap访问越界\n";
 			return 0;
 		}
-		return map_info[pos.x][pos.y];
+		return map_info[pos.Vertical][pos.Horizontal];
 	}
 
 	bool SetNumber(GPoint pos, int num)//返回操作是否成功
@@ -80,9 +86,9 @@ public:
 			return false;
 		if (num >= 0 || num <= 9)//保证为有效数字
 		{
-			if (map_info[pos.x][pos.x] < 0)//规定小于0的为最初的数字
+			if (map_info[pos.Vertical][pos.Vertical] < 0)//规定小于0的为最初的数字
 				return false;
-			map_info[pos.x][pos.y] = num;
+			map_info[pos.Vertical][pos.Horizontal] = num;
 			return true;
 		}
 		return false;

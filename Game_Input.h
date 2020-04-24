@@ -1,5 +1,5 @@
 #pragma once
-#include "Game_Global.h"
+#include "Game_MessageQueue.h"
 
 //处理用户输入,封装为一个全局API
 class GListener
@@ -21,7 +21,7 @@ private:
 	GListener(const GListener&) = delete;
 public:
 	//用于储存当前的输入数据
-	G_InputInfo Info;
+	GI_Msg Info;
 public:
 	static GListener* getInstance()
 	{
@@ -30,6 +30,36 @@ public:
 	}
 	//更新输入数据,若为可接受的输入则返回true
 	bool Update(void);
+public:
+	inline HANDLE WinHandle()
+	{
+		return GetStdHandle(STD_OUTPUT_HANDLE);
+	}
+	void updateWindowInfo()
+	{
+		Info.winhandle = WinHandle();
+
+		CONSOLE_SCREEN_BUFFER_INFO Pif;
+		GetConsoleScreenBufferInfo(Info.winhandle, &Pif);
+
+		Pif.dwSize.X = Pif.srWindow.Right + 1;
+		Pif.dwSize.Y = Pif.srWindow.Bottom + 1;
+
+		if (Info.screensize.Horizontal != Pif.dwSize.X || Info.screensize.Vertical != Pif.dwSize.Y)
+		{
+			Info.screensize.Horizontal = Pif.dwSize.X;
+			Info.screensize.Vertical = Pif.dwSize.Y;
+
+			GMsg->AddMsg({ GMType::Clear });
+		}
+		SetConsoleScreenBufferSize(Info.winhandle, Pif.dwSize);
+
+		CONSOLE_CURSOR_INFO CursorInfo;
+		GetConsoleCursorInfo(Info.winhandle, &CursorInfo);//获取控制台光标信息
+		CursorInfo.bVisible = false; //隐藏控制台光标
+		SetConsoleCursorInfo(Info.winhandle, &CursorInfo);//设置控制台光标状态
+
+	}
 };
 
 #define GInput GListener::getInstance()

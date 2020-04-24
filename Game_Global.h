@@ -6,6 +6,7 @@
 #include <queue>
 #include <iostream>
 #include <conio.h>
+#include <Windows.h>
 
 using std::vector;
 using std::string;
@@ -16,17 +17,7 @@ using std::queue;
 
 using std::cout;
 using std::cin;
-
-//用于GMap的序列化
-const char AngleChar = '*';
-const char HorizonChar = '-';
-const char VerticalChar = '|';
-const char BlockChar = 'N';
-
-//保证居中输出
-static const int up_down = 3;//上下间距
-static const int left_right = 30;//左右间距
-static const int between_point = 4;//游标间距
+using std::endl;
 
 
 
@@ -72,40 +63,86 @@ enum class GStatus//储存游戏状态
 //信息类型枚举
 enum class GMType
 {
-	Exit_Process,
-	NOP
+	Exit_Process,//退出进程
+	Clear,//清空画面
+	Rend,//添加画面(不覆盖)
+	Change_View,//切换OnView
+	Change_Hard,//切换Hard
+	Change_PMode,//切换PMode
+	Prompt,//提示信息,强制切换视图
+	SetNum,//填数字
+	GetHint,//获取提示
+	GetAnswer,//获取答案
+	Save,//存档
+	Load,//读档
+	NOP//空操作
 };
-
 
 //一些公用类的定义
 
 //游戏坐标点
 class GPoint
 {
-	static int length;
-	static int width;
 public:
-	int x = 0;
-	int y = 0;
-
+	int Vertical;//从上至下距离
+	int Horizontal;//从左至右距离
+	GPoint(int _Vertical = 0, int _Horizontal = 0) :
+		Vertical(_Vertical), Horizontal(_Horizontal) {}
 	GPoint Transform()
 	{
 		//真实坐标和本地坐标的转换
+
 	}
 };
+
+const int FPS = 20;//刷新率
+
 //类之间的通信
-typedef struct
+typedef union ExInfo
 {
-	GMType type;
-}G_MsgInfo;
+	struct
+	{
+		GPoint pos;
+		int num = 0;
+	}setnum;
+
+	void* newshow;
+
+	GStatus hard;
+	GStatus pmode;
+
+	ExInfo()
+	{
+		newshow = nullptr;
+	}
+}ExInfo;//额外信息
+typedef struct Behavior_Info
+{
+	GMType type = GMType::NOP;
+	ExInfo ex;
+}GB_Msg;
 //类与用户层的通信
 typedef struct Input_Info
 {
-	GPoint mouse_pos;
+	GPoint mouse_pos = { 0,0 };
+	GPoint screensize = { 30,90 };
+	HANDLE winhandle = nullptr;
 	bool left_mouse_down = false;
 	bool right_mouse_down = false;
 	int onkey = 0;
-}G_InputInfo;
+}GI_Msg;
+//类与渲染器的通信
+typedef struct Output_Info
+{
+	typedef struct Str_Info
+	{
+		string StrView;//图形
+		GPoint pos;//位置
+	}Str_Info;
+
+	vector<Str_Info>AllStrings;
+	bool autoplace = true;//自动对齐
+}GO_Msg;
 
 
 

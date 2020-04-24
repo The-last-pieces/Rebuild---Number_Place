@@ -6,7 +6,7 @@
 class GView
 {
 public:
-	virtual vector<string> Stringify() = 0;
+	virtual GO_Msg Stringify() = 0;
 	virtual bool Behavior() = 0;
 };
 

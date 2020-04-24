@@ -19,15 +19,15 @@ private:
 	GMessageQueue(const GMessageQueue&) = delete;
 public:
 	//消息队列
-	queue<G_MsgInfo> MQueue;
+	queue<GB_Msg> MQueue;
 public:
 	static GMessageQueue* getInstance()
 	{
 		//保持每个GInput同步
 		return Instance;
 	}
-	void AddMsg(G_MsgInfo info);
-	G_MsgInfo PopMsg();
+	void AddMsg(GB_Msg info);
+	GB_Msg PopMsg();
 };
 
 #define GMsg GMessageQueue::getInstance()
