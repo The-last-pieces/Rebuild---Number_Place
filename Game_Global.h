@@ -77,6 +77,34 @@ enum class GMType
 	Load,//读档
 	NOP//空操作
 };
+//输出格式枚举
+enum class GOType
+{
+	Center,
+	Explanation,
+	Left_top,
+	Left_bottom,
+	Right_top,
+	Right_bottom,
+	SelfDef
+};
+//视图资源枚举
+enum class GResType
+{
+	StartGame,//开始游戏Choose
+	ContinueGame,//继续游戏Choose
+	ModeSetting,//游戏设置Choose
+	GameHelp,//游戏帮助Choose
+	QuitGame,//退出游戏Choose
+
+	SetHard,//游戏难度Lable
+	SetMode,//游戏模式Lable
+
+	MainMenu,//主菜单
+	SettingMenu,//游戏设置菜单
+	QuitMenu,//处理退出行为
+	HelpMenu//游戏帮助
+};
 
 //一些公用类的定义
 
@@ -100,11 +128,13 @@ const int FPS = 20;//刷新率
 //类之间的通信
 typedef union ExInfo
 {
-	struct
+	typedef struct
 	{
 		GPoint pos;
 		int num = 0;
-	}setnum;
+	}NumInfo;
+
+	NumInfo setnum;
 
 	void* newshow;
 
@@ -138,10 +168,11 @@ typedef struct Output_Info
 	{
 		string StrView;//图形
 		GPoint pos;//位置
+		GOType type = GOType::Center;//输出格式
+
 	}Str_Info;
 
 	vector<Str_Info>AllStrings;
-	bool autoplace = true;//自动对齐
 }GO_Msg;
 
 

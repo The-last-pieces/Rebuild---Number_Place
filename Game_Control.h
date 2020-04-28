@@ -8,6 +8,7 @@ private:
 	GStatus Hard = GStatus::Choose_Easy;//游戏难度
 	GStatus PMode = GStatus::Choose_Classic;//游戏类型
 	GView* OnView = nullptr;
+	map<GResType, GView*>GResources;
 private:
 	void SaveProcess(){}
 	void LoadProcess(){}
@@ -75,10 +76,7 @@ private:
 		GOutput->Render(OnView->Stringify());
 	}
 public:
-	GControl()
-	{
-
-	}
+	GControl();
 	void OnLoad()
 	{
 		while (true)

@@ -148,6 +148,7 @@
     <ClInclude Include="Game_View.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Game_Control.cpp" />
     <ClCompile Include="Game_Global.cpp" />
     <ClCompile Include="Game_Main.cpp" />
     <ClCompile Include="Game_Map.cpp" />

@@ -31,3 +31,9 @@ public:
 };
 
 #define GMsg GMessageQueue::getInstance()
+
+
+GB_Msg FormatMsg(void* ptr);
+GB_Msg FormatMsg(ExInfo::NumInfo numinfo);
+GB_Msg FormatMsg(GStatus mode, GMType mtype);
+GB_Msg FormatMsg(GMType mtype);

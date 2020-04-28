@@ -52,6 +52,7 @@ private:
 		SetConsoleCursorPosition(GInput->Info.winhandle, temp);
 	}
 	void SmartRender(const GO_Msg& info);
+	void DealInfo(GO_Msg& info);//格式化处理
 private:
 	//防止意外的修改对象
 	GTalker()

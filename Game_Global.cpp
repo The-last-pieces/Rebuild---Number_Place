@@ -1,6 +1,36 @@
 #include "Game_Input.h"
 #include "Game_Output.h"
-//#include "Game_MessageQueue.h"
+
+GB_Msg FormatMsg(void * ptr)
+{
+	GB_Msg rmsg;
+	rmsg.type = GMType::Change_View;
+	rmsg.ex.newshow = ptr;
+	return rmsg;
+}
+GB_Msg FormatMsg(ExInfo::NumInfo numinfo)
+{
+	GB_Msg rmsg;
+	rmsg.type = GMType::Change_View;
+	rmsg.ex.setnum = numinfo;
+	return rmsg;
+}
+GB_Msg FormatMsg(GStatus mode,GMType mtype)
+{
+	GB_Msg rmsg;
+	rmsg.type = mtype;
+	if (mtype == GMType::Change_Hard)
+		rmsg.ex.hard = mode;
+	if (mtype == GMType::Change_PMode)
+		rmsg.ex.pmode = mode;
+	return rmsg;
+}
+GB_Msg FormatMsg(GMType mtype)
+{
+	GB_Msg rmsg;
+	rmsg.type = mtype;
+	return rmsg;
+}
 
 //三大全局对象的实现
 GTalker* GTalker::Instance = new GTalker;
@@ -40,6 +70,49 @@ void GTalker::backgroud()
 	moveto({ 0,0 });
 }
 
+void GTalker::DealInfo(GO_Msg& info)
+{
+	map<GOType, vector<GO_Msg::Str_Info>>AfterDeal;
+
+	for (auto node : info.AllStrings)
+	{
+		AfterDeal[node.type].push_back(node);
+	}
+
+	int Needs = int(AfterDeal[GOType::Center].size());
+	int Up_Down = vertical() - between_point * (Needs - 1) + Needs;
+	Up_Down /= 2;
+
+	for (auto& node : AfterDeal)
+	{
+		for (int index = 0; index <int(node.second.size()); ++index)
+		{
+			switch (node.first)
+			{
+			case GOType::Center:
+				node.second[index].pos =
+				{ Up_Down + index + index * between_point,(horizontal() - int(node.second[index].StrView.size())) / 2 };
+				break;
+			case GOType::Explanation:
+				node.second[index].pos =
+				{ vertical() - Up_Down + index + 1,(horizontal() - int(node.second[index].StrView.size())) / 2 };
+				break;
+			case GOType::Left_top:
+				break;
+			case GOType::Left_bottom:
+				break;
+			case GOType::Right_top:
+				break;
+			case GOType::Right_bottom:
+				break;
+			case GOType::SelfDef:
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
 void GTalker::SmartRender(const GO_Msg& info)
 {
 	int Needs = int(info.AllStrings.size());
@@ -54,12 +127,9 @@ void GTalker::SmartRender(const GO_Msg& info)
 void GTalker::Render(GO_Msg info)
 {
 	backgroud();
+	
+	DealInfo(info);
 
-	if (info.autoplace)
-	{
-		SmartRender(info);
-		return;
-	}
 	for (const auto& node : info.AllStrings)
 	{
 		moveto(node.pos);
