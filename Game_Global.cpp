@@ -1,21 +1,21 @@
 #include "Game_Input.h"
 #include "Game_Output.h"
 
-GB_Msg FormatMsg(void * ptr)
+GB_Msg CreateMsg(GResType ptr)
 {
 	GB_Msg rmsg;
 	rmsg.type = GMType::Change_View;
 	rmsg.ex.newshow = ptr;
 	return rmsg;
 }
-GB_Msg FormatMsg(ExInfo::NumInfo numinfo)
+GB_Msg CreateMsg(ExInfo::NumInfo numinfo)
 {
 	GB_Msg rmsg;
 	rmsg.type = GMType::Change_View;
 	rmsg.ex.setnum = numinfo;
 	return rmsg;
 }
-GB_Msg FormatMsg(GStatus mode,GMType mtype)
+GB_Msg CreateMsg(GStatus mode,GMType mtype)
 {
 	GB_Msg rmsg;
 	rmsg.type = mtype;
@@ -25,7 +25,7 @@ GB_Msg FormatMsg(GStatus mode,GMType mtype)
 		rmsg.ex.pmode = mode;
 	return rmsg;
 }
-GB_Msg FormatMsg(GMType mtype)
+GB_Msg CreateMsg(GMType mtype)
 {
 	GB_Msg rmsg;
 	rmsg.type = mtype;
@@ -52,7 +52,6 @@ void GTalker::backgroud()
 		cout << WordsArr[temp];
 		i += int(WordsArr[temp].size());
 	}
-	//cout << string(Width, '*');
 	for (int i = 1; i < vertical(); ++i)
 	{
 		moveto({ 0,i });
@@ -80,9 +79,10 @@ void GTalker::DealInfo(GO_Msg& info)
 	}
 
 	int Needs = int(AfterDeal[GOType::Center].size());
-	int Up_Down = vertical() - between_point * (Needs - 1) + Needs;
+	int Up_Down = vertical() - between_point * (Needs - 1) - Needs;
 	Up_Down /= 2;
 
+	info.AllStrings.clear();
 	for (auto& node : AfterDeal)
 	{
 		for (int index = 0; index <int(node.second.size()); ++index)
@@ -91,11 +91,11 @@ void GTalker::DealInfo(GO_Msg& info)
 			{
 			case GOType::Center:
 				node.second[index].pos =
-				{ Up_Down + index + index * between_point,(horizontal() - int(node.second[index].StrView.size())) / 2 };
+				{(horizontal() - int(node.second[index].StrView.size())) / 2, Up_Down + index + index * between_point };
 				break;
 			case GOType::Explanation:
 				node.second[index].pos =
-				{ vertical() - Up_Down + index + 1,(horizontal() - int(node.second[index].StrView.size())) / 2 };
+				{ (horizontal() - int(node.second[index].StrView.size())) / 2 , vertical() - Up_Down + index + 1 };
 				break;
 			case GOType::Left_top:
 				break;
@@ -107,27 +107,28 @@ void GTalker::DealInfo(GO_Msg& info)
 				break;
 			case GOType::SelfDef:
 				break;
+			case GOType::GameTable:
+				node.second[index].pos =
+				{ (horizontal() - int(node.second[index].StrView.size())) / 2, (vertical() - int(node.second.size())) / 2 + index };
+				break;
+			case GOType::NoBetween_Center:
+				break;
+			case GOType::GameHint:
+				node.second[index].pos =
+				{ (horizontal() - int(node.second[index].StrView.size())) / 2 , (vertical() + 13) / 2 + 3 };
+				break;
 			default:
 				break;
 			}
+			info.AllStrings.push_back(node.second[index]);
 		}
 	}
 }
-void GTalker::SmartRender(const GO_Msg& info)
-{
-	int Needs = int(info.AllStrings.size());
-	int Up_Down = vertical() - between_point * (Needs - 1) + Needs;
-	Up_Down /= 2;
-	for (int i = 0; i < Needs; ++i)
-	{
-		moveto({ Up_Down + i + i * between_point,(horizontal() - int(info.AllStrings[i].StrView.size())) / 2 });
-		cout << info.AllStrings[i].StrView;
-	}
-}
+
 void GTalker::Render(GO_Msg info)
 {
 	backgroud();
-	
+
 	DealInfo(info);
 
 	for (const auto& node : info.AllStrings)
@@ -135,23 +136,22 @@ void GTalker::Render(GO_Msg info)
 		moveto(node.pos);
 		cout << node.StrView;
 	}
+
 }
 
 bool GListener::Update(void)
 {
 	//更新输入数据
 	updateWindowInfo();
-	Info.onkey = 0;
-	if (_kbhit())
-	{
-		Info.onkey = _getch();
-		return true;
-	}
-	return false;
+	bool temp = updateKeyBoardInfo() || updateMouseInfo();
+	updateType();
+	return temp;
 }
 
 void GMessageQueue::AddMsg(GB_Msg info)
 {
+	//if (info.type == GMType::Rend)
+		//MQueue.push(GB_Msg{ GMType::Clear });
 	if (MQueue.empty() || MQueue.front().type != info.type)
 		MQueue.push(info);
 }

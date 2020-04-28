@@ -30,12 +30,11 @@ private:
 		0,8,0,0,2,0,0,4,0
 		}
 	};//地图源数据,固定9×9
-	int map_info1[9][9] = { 0 };
+	//int map_info1[9][9] = { 0 };
 public:
-	GMap(int hard, GStatus mode = GStatus::Choose_Classic) :Pmode(mode)
+	GMap(GStatus hard, GStatus mode = GStatus::Choose_Classic) :Pmode(mode)
 	{
 		//初始化地图
-		hard;
 		for (int x = 0; x < 9; ++x)
 		{
 			for (int y = 0; y < 9; ++y)
@@ -65,9 +64,13 @@ private:
 	{
 		return !(point.Vertical < 0 || point.Horizontal < 0 || point.Vertical >= Size() || point.Horizontal >= Size());
 	}
+	char NumtoChar(int num)
+	{
+		return char(num ? (abs(num) + '0') : BlockChar);
+	}
 public:
 
-	vector<string>Stringify();//序列化
+	GO_Msg Stringify();//序列化
 
 	int GetVal(GPoint pos)
 	{

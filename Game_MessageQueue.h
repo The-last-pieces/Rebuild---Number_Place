@@ -33,7 +33,7 @@ public:
 #define GMsg GMessageQueue::getInstance()
 
 
-GB_Msg FormatMsg(void* ptr);
-GB_Msg FormatMsg(ExInfo::NumInfo numinfo);
-GB_Msg FormatMsg(GStatus mode, GMType mtype);
-GB_Msg FormatMsg(GMType mtype);
+GB_Msg CreateMsg(GResType ptr);//Change_View信息
+GB_Msg CreateMsg(ExInfo::NumInfo numinfo);//Set_Num信息
+GB_Msg CreateMsg(GStatus mode, GMType mtype);//Change_Mode信息
+GB_Msg CreateMsg(GMType mtype);//普通信息

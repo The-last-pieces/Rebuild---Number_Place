@@ -5,6 +5,7 @@
 #include <map>
 #include <queue>
 #include <iostream>
+#include <time.h>
 #include <conio.h>
 #include <Windows.h>
 
@@ -81,29 +82,50 @@ enum class GMType
 enum class GOType
 {
 	Center,
+	NoBetween_Center,
 	Explanation,
 	Left_top,
 	Left_bottom,
 	Right_top,
 	Right_bottom,
-	SelfDef
+	SelfDef,
+	GameTable,
+	GameHint
+};
+//输入行为枚举
+enum class GIType
+{
+	None,
+	Number,
+	Confirm,
+	Back,
+	Up_Page,
+	Down_Page,
+	Left_Lable,
+	Right_Lable,
+	Quick_Mouse,
+	Mouse_Left
 };
 //视图资源枚举
 enum class GResType
 {
-	StartGame,//开始游戏Choose
-	ContinueGame,//继续游戏Choose
-	ModeSetting,//游戏设置Choose
-	GameHelp,//游戏帮助Choose
-	QuitGame,//退出游戏Choose
+	Play_OnGame,//游戏视图
 
-	SetHard,//游戏难度Lable
-	SetMode,//游戏模式Lable
+	Choose_StartGame,//开始游戏Choose
+	Choose_ContinueGame,//继续游戏Choose
+	Choose_ModeSetting,//游戏设置Choose
+	Choose_GameHelp,//游戏帮助Choose
+	Choose_QuitGame,//退出游戏Choose
+	Choose_ExitWithSave,
+	Choose_ExitWithinSave,
 
-	MainMenu,//主菜单
-	SettingMenu,//游戏设置菜单
-	QuitMenu,//处理退出行为
-	HelpMenu//游戏帮助
+	Lable_SetHard,//游戏难度Lable
+	Lable_SetMode,//游戏模式Lable
+
+	Menu_Main,//主菜单
+	Menu_Setting,//游戏设置菜单
+	Menu_Quit,//处理退出行为
+	Menu_Help//游戏帮助
 };
 
 //一些公用类的定义
@@ -136,14 +158,15 @@ typedef union ExInfo
 
 	NumInfo setnum;
 
-	void* newshow;
+	GResType newshow;
+	//void* newshow;
 
 	GStatus hard;
 	GStatus pmode;
 
 	ExInfo()
 	{
-		newshow = nullptr;
+		newshow = GResType::Menu_Main;
 	}
 }ExInfo;//额外信息
 typedef struct Behavior_Info
@@ -154,11 +177,14 @@ typedef struct Behavior_Info
 //类与用户层的通信
 typedef struct Input_Info
 {
+	GIType intype=GIType::None;
 	GPoint mouse_pos = { 0,0 };
 	GPoint screensize = { 30,90 };
+	GPoint basepoint = { 0,0 };
 	HANDLE winhandle = nullptr;
-	bool left_mouse_down = false;
-	bool right_mouse_down = false;
+	bool mouse_hit = false;
+	bool on_hit = false;
+	bool mouse_hit_quick = false;
 	int onkey = 0;
 }GI_Msg;
 //类与渲染器的通信

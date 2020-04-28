@@ -8,14 +8,6 @@ private:
 	//唯一实例化对象,编译期确定
 	static GTalker* Instance;
 private:
-	//整体视图范围
-	//int Height = 20;//上下距离差
-	//int Width = 80;//左右距离差
-
-	//保证居中输出
-	//const int up_down = 3;//上下间距
-	//const int left_right = 30;//左右间距
-
 	string backstring = "@%&";//"--版权所有--最后之作--";
 	const int between_point = 4;//游标间距
 private:
@@ -44,6 +36,7 @@ private:
 	{
 		return GInput->Info.screensize.Horizontal;
 	}
+//public:
 	void moveto(GPoint pos)
 	{
 		COORD temp;
@@ -51,7 +44,6 @@ private:
 		temp.Y = pos.Horizontal;
 		SetConsoleCursorPosition(GInput->Info.winhandle, temp);
 	}
-	void SmartRender(const GO_Msg& info);
 	void DealInfo(GO_Msg& info);//格式化处理
 private:
 	//防止意外的修改对象

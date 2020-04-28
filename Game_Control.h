@@ -25,7 +25,7 @@ private:
 			Render();
 			break;
 		case GMType::Change_View:
-			OnView = (GView*)ToDeal.ex.newshow;
+			OnView = GResources[ToDeal.ex.newshow];
 			break;
 		case GMType::Change_Hard:
 			Hard = ToDeal.ex.hard;
@@ -67,10 +67,6 @@ private:
 	}
 	void Render()
 	{
-		/*
-		GO_Msg gm;
-		gm.AllStrings.push_back({ "", { rand() % 80,rand() % 20} });
-		GOutput->Render(gm);*/
 		if (!OnView)
 			return;
 		GOutput->Render(OnView->Stringify());
@@ -82,7 +78,8 @@ public:
 		while (true)
 		{
 			//抓取到可能有效的输入才进行处理
-			if (GInput->Update())
+			GInput->Update();
+			if (GInput->Info.intype!=GIType::None)
 				DealInput();
 
 			GOutput->backgroud();
