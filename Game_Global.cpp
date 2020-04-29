@@ -50,6 +50,7 @@ void GTalker::backgroud()
 	{
 		int temp = (i + offpos) % WordsArr.size();
 		cout << WordsArr[temp];
+		
 		i += int(WordsArr[temp].size());
 	}
 	for (int i = 1; i < vertical(); ++i)
@@ -125,8 +126,62 @@ void GTalker::DealInfo(GO_Msg& info)
 	}
 }
 
+void GTalker::transoutput()
+{
+	SMALL_RECT srctReadRect;
+	SMALL_RECT srctWriteRect;
+	CHAR_INFO* chiBuffer = new CHAR_INFO[(horizontal() + 1) * (vertical() + 1)];
+	COORD coordBufSize = { horizontal() , vertical() };
+	COORD coordBufCoord = { 0,0 };
+	/*coordBufSize.Y = 25;
+	coordBufSize.X = 80;*/
+	//// The top left destination cell of the temporary buffer is 
+	//// row 0, col 0. 
+	coordBufCoord.X = 0;
+	coordBufCoord.Y = 0;
+	BOOL fSuccess;
+	fSuccess = ReadConsoleOutput(
+		hOut[1], // screen buffer to read from 
+		chiBuffer, // buffer to copy into 
+		coordBufSize, // col-row size of chiBuffer 
+		coordBufCoord, // top left dest. cell in chiBuffer 
+		&srctReadRect); // screen buffer source rectangle 
+
+	srctWriteRect.Top = 0; // top lt: row 10, col 0 
+	srctWriteRect.Left = 0;
+	srctWriteRect.Bottom = GInput->Info.screensize.Vertical;
+	srctWriteRect.Right = GInput->Info.screensize.Horizontal;
+
+	fSuccess = WriteConsoleOutput(
+		hOut[0], // screen buffer to write to 
+		chiBuffer, // buffer to copy from 
+		coordBufSize, // col-row size of chiBuffer 
+		coordBufCoord, // top left src cell in chiBuffer 
+		&srctWriteRect); // dest. screen buffer rectangle 
+}
+
+void GTalker::clearhout(HANDLE hd)
+{
+	SMALL_RECT srctReadRect;
+	SMALL_RECT srctWriteRect;
+	CHAR_INFO* chiBuffer = new CHAR_INFO[GInput->Info.screensize.Horizontal * GInput->Info.screensize.Vertical]{ 0 };
+	COORD coordBufSize = { GInput->Info.screensize.Horizontal ,GInput->Info.screensize.Vertical };
+	COORD coordBufCoord = { GInput->Info.screensize.Horizontal ,GInput->Info.screensize.Vertical };
+	BOOL fSuccess;
+	WriteConsoleOutput(
+		hd, // screen buffer to write to 
+		chiBuffer, // buffer to copy from 
+		coordBufSize, // col-row size of chiBuffer 
+		coordBufCoord, // top left src cell in chiBuffer 
+		&srctWriteRect); // dest. screen buffer rectangle 
+}
+
 void GTalker::Render(GO_Msg info)
 {
+	//获取
+	//在闲置hout中绘图
+
+	//SetConsoleActiveScreenBuffer(hOut[1]);
 	backgroud();
 
 	DealInfo(info);
@@ -136,6 +191,15 @@ void GTalker::Render(GO_Msg info)
 		moveto(node.pos);
 		cout << node.StrView;
 	}
+
+	//transoutput();
+
+	//SetConsoleActiveScreenBuffer(hOut[0]);
+
+	//clearhout(hOut[1]);
+	
+	//闲置hout设置为活动窗口
+	//递增下标
 
 }
 

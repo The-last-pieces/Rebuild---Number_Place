@@ -71,7 +71,7 @@ private:
 public:
 
 	GO_Msg Stringify();//–Ú¡–ªØ
-
+	std::shared_ptr<int*>a;
 	int GetVal(GPoint pos)
 	{
 		if (!InArea(pos))

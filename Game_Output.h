@@ -10,6 +10,8 @@ private:
 private:
 	string backstring = "@%&";//"--版权所有--最后之作--";
 	const int between_point = 4;//游标间距
+	HANDLE hOut[2] = {};
+	int activeh = 0;
 private:
 	vector<string> getbackstring()
 	{
@@ -36,6 +38,9 @@ private:
 	{
 		return GInput->Info.screensize.Horizontal;
 	}
+
+	void transoutput();
+	void clearhout(HANDLE hd);
 //public:
 	void moveto(GPoint pos)
 	{
@@ -51,7 +56,19 @@ private:
 	{
 		system("mode con lines=30 cols=90");
 		system("color e9");
-		//将update加入子线程中
+		hOut[0] = GetStdHandle(STD_OUTPUT_HANDLE);
+		hOut[1] = CreateConsoleScreenBuffer(
+			GENERIC_WRITE,//定义进程可以往缓冲区写数据
+			FILE_SHARE_WRITE,//定义缓冲区可共享写权限
+			NULL,
+			CONSOLE_TEXTMODE_BUFFER,
+			NULL
+			);
+		CONSOLE_CURSOR_INFO cci;
+		cci.bVisible = 0;
+		cci.dwSize = 1;
+		SetConsoleCursorInfo(hOut[0], &cci);
+		SetConsoleCursorInfo(hOut[1], &cci);
 	}
 	~GTalker()
 	{
