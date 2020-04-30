@@ -41,9 +41,10 @@ enum class GStatus//储存游戏状态
 
 	Choose_Standard,//标准模式
 	Choose_Classic,//经典模式
-	Choose_Easy,//简单难度
-	Choose_Normal,//一般难度
-	Choose_Master,//困难难度
+
+	Choose_Easy = 20,//简单难度
+	Choose_Normal = 30,//一般难度
+	Choose_Master = 40,//困难难度
 
 	//派生类类型
 	ObjType_Play,//游戏进程相关

@@ -9,7 +9,15 @@ int main(void)
 		Sleep(50);
 	}*/
 
-	GControl test;
-	test.OnLoad();
+	try
+	{
+		
+		GControl test;
+		test.OnLoad();
+	}
+	catch (const std::exception&)
+	{
+
+	}
 	return 0;
 }

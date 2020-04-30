@@ -8,6 +8,7 @@ GControl::GControl()
 
 	//GResources[GResType::OnPlay] = new GPlay();
 
+	
 	GResources[GResType::Play_OnGame] = new GPlay{
 
 	};

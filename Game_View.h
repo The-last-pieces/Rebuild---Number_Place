@@ -161,6 +161,9 @@ public:
 			ChoosePos = TransformHit(ChoosePos);
 			OnMap.SetNumber(ChoosePos, 0);
 			break;
+		case GIType::Confirm:
+			OnMap.WorkOut();
+			break;
 		default:
 			return false;
 		}
