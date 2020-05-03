@@ -16,9 +16,11 @@ public:
 	//static const size_t Map_Size = 9;
 	class GMapWorker
 	{
+	public:
+		array<array<int, Map_Size>, Map_Size> canans = { 0 };
+		int anscounts = 0;
 	private:
 		GStatus Gmode = GStatus::Choose_Classic;
-		int anscounts = 0;
 
 		array<array<bool, Map_Size>, Map_Size> blocks = { 0 };
 		array<array<bool, Map_Size>, Map_Size> cols = { 0 };
@@ -26,17 +28,12 @@ public:
 		array<array<bool, 2 * Map_Size - 1>, 2 * Map_Size - 1> llines = { 0 };//左上右下
 		array<array<bool, 2 * Map_Size - 1>, 2 * Map_Size - 1> rlines = { 0 };//右上左下
 
-		array<array<int, Map_Size>, Map_Size> canans = { 0 };
-
 	private:
 		bool dealmap(array<array<int, Map_Size>, Map_Size>& minfo, int xs, int ys)
 		{
-			//cout << anscounts << endl;
-			/*if (xs == Map_Size - 1 && ys == Map_Size - 1 && minfo[xs][ys])
-			{
-				++anscounts;
-				return;
-			}*/
+			if (anscounts > 1)
+				return false;
+
 			for (int x = 0; x < Map_Size; x++)
 			{
 				for (int y = 0; y < Map_Size; y++)
@@ -52,7 +49,7 @@ public:
 								!blocks[k][num] &&
 								(
 									Gmode != GStatus::Choose_Classic ||
-									(!rlines[x + y][num] && !llines[Map_Size - x + y][num])
+									(!rlines[x + y][num] && !llines[Map_Size - 1 - x + y][num])
 									)
 								)
 							{
@@ -90,6 +87,43 @@ public:
 			rows.fill(array<bool, Map_Size >{0});
 			llines.fill(array<bool, 2 * Map_Size - 1 >{0});
 			rlines.fill(array<bool, 2 * Map_Size - 1 >{0});
+		}
+
+		bool tryset(int& pos, int x, int y)
+		{
+			if (pos == 0)
+			{
+				int val = 0, num = 0, k = 0;
+				bool hmp[9] = { 0 };
+				int rdnum[9] = { 1,2,3,4,5,6,7,8,9 };
+				for (int i = 0; i < 20; ++i)
+				{
+					swap(rdnum[rand() % 9], rdnum[rand() % 9]);
+				}
+				for (int i = 0; i < 9; ++i)
+				{
+					val = -rdnum[i], num = abs(val) - 1, k = x / 3 * 3 + y / 3;
+					if (!(
+						(GStatus::Choose_Classic != Gmode ||
+						(rlines[x + y][num] ||
+						llines[Map_Size - 1 - x + y][num])) ||
+						rows[x][num] ||
+						cols[y][num] ||
+						blocks[k][num]))
+					{
+						rlines[x + y][num] =
+							llines[Map_Size - 1 - x + y][num] =
+							rows[x][num] =
+							cols[y][num] =
+							blocks[k][num] = true;
+
+						pos = val;
+						return true;
+					}
+				}
+				pos = 0;
+			}
+			return false;
 		}
 	public:
 		GMapWorker(GStatus _mode):Gmode(_mode)
@@ -162,20 +196,51 @@ public:
 			dealmap(temp, 0, 0);
 			if (anscounts == 1)
 			{
-				minfo = temp;
+				minfo = canans;
 				return true;
 			}
 			else
 			{
-				minfo = canans;
-				minfo[0][0] = anscounts;
 				return false;
 			}
 
 		}
+
+		bool getamap(array<array<int, Map_Size>, Map_Size>& mp, int base)
+		{
+			srand(unsigned int(time(NULL)));
+			base = 30;
+			while (1)
+			{
+				mp.fill({ 0 });
+				predeal();
+				for (int i = 0; i < base; )
+				{
+					GPoint pos = { rand() % 9,rand() % 9 };
+
+					if (tryset(mp[pos.Horizontal][pos.Vertical], pos.Horizontal, pos.Vertical))
+					{
+						++i;
+					}
+				}
+
+				auto temp = mp;
+				if (getanswer(temp))
+				{
+					canans = temp;
+					return true;
+				}
+			}
+		}
 	} worker;
+
+	GStatus hard;
+	GStatus mode;
+
+	array<array<int, Map_Size>, Map_Size> map_info = {};
 private:
-	array<array<int, Map_Size>, Map_Size> map_info = {
+	array<array<int, Map_Size>, Map_Size> answer = {};
+	/*{
 		{
 		0,0,0,1,0,0,0,0,0,
 		0,4,0,0,7,0,0,2,3,
@@ -187,7 +252,7 @@ private:
 		7,0,0,5,0,0,0,0,2,
 		0,8,0,0,2,0,0,4,0
 		}
-	};
+	};*/
 	
 	/*{
 		{
@@ -203,31 +268,15 @@ private:
 		}
 	};*/
 public:
-	GMap(GStatus hard, GStatus mode = GStatus::Choose_Standard) :worker(mode) 
+	GMap() :worker(GStatus::Choose_Standard), hard(GStatus::Choose_Normal), mode(GStatus::Choose_Standard)
+	{
+
+	}
+	GMap(GStatus _hard, GStatus _mode = GStatus::Choose_Standard) :worker(_mode), hard(GStatus::Choose_Normal), mode(_mode)
 	{
 		//初始化地图
-		srand(unsigned int(time(NULL)));
-		//return;
-		int base = (int)30;
-		for (int i = 0; i < base; )
-		{
-			//while (true)
-			{
-				GPoint pos = { rand() % 9,rand() % 9 };
-				//cout << pos.Horizontal << "  " << pos.Vertical << endl;
-				if (map_info[pos.Horizontal][pos.Vertical] == 0)
-				{
-					map_info[pos.Horizontal][pos.Vertical] = -(rand() % 9 + 1);
-					if (worker.canbe(map_info))
-					{
-						++i;
-						continue;
-					}
-					map_info[pos.Horizontal][pos.Vertical] = 0;
-				}
-			}
-		}
-		
+		worker.getamap(map_info, int(_hard));
+
 	}
 private:
 	int Size()
@@ -260,7 +309,7 @@ public:
 			return false;
 		if (num >= 0 || num <= 9)//保证为有效数字
 		{
-			if (map_info[pos.Vertical][pos.Vertical] < 0)//规定小于0的为最初的数字
+			if (map_info[pos.Vertical][pos.Horizontal] < 0)//规定小于0的为最初的数字
 				return false;
 			map_info[pos.Vertical][pos.Horizontal] = num;
 			return true;
@@ -273,6 +322,6 @@ public:
 	}
 	bool IsWin()
 	{
-
+		return map_info == worker.canans;
 	}
 };

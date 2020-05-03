@@ -115,7 +115,6 @@ class GPlay :public GView
 	int ChooseNum = 0;
 	GPoint ChoosePos;
 	GResType Father=GResType::Menu_Main;
-	GMap OnMap = GMap(GStatus::Choose_Easy);
 private:
 	GPoint TransformHit(GPoint pos)
 	{
@@ -133,9 +132,19 @@ private:
 		//{ (horizontal() - int(node.second[index].StrView.size())) / 2, (vertical() - int(node.second.size())) / 2 + index };
 	}
 public:
+	GMap* OnMap = nullptr;
+	bool startgame = false;
+
+	void CreateMap(GStatus hard,GStatus mode)
+	{
+		OnMap = new GMap(hard,mode);
+	}
 	GO_Msg Stringify()
 	{
-		GO_Msg mtemp = OnMap.Stringify();
+		if (!OnMap)
+			return {};
+
+		GO_Msg mtemp = OnMap->Stringify();
 		string stemp = "当前选择的数字为:";
 		stemp.push_back(ChooseNum + '0');
 		mtemp.AllStrings.push_back({ stemp,{},GOType::GameHint });
@@ -143,6 +152,9 @@ public:
 	}
 	bool Behavior()
 	{
+		if (!OnMap)
+			return false;
+
 		switch (GInput->Info.intype)
 		{
 		case GIType::Number:
@@ -154,21 +166,31 @@ public:
 		case GIType::Mouse_Left:
 			ChoosePos = GInput->Info.mouse_pos;
 			ChoosePos = TransformHit(ChoosePos);
-			OnMap.SetNumber(ChoosePos, ChooseNum);
-			break;
-		case GIType::Quick_Mouse:
-			ChoosePos = GInput->Info.mouse_pos;
-			ChoosePos = TransformHit(ChoosePos);
-			OnMap.SetNumber(ChoosePos, 0);
+			OnMap->SetNumber(ChoosePos, ChooseNum);
 			break;
 		case GIType::Confirm:
-			OnMap.WorkOut();
+			OnMap->WorkOut();
 			break;
 		default:
 			return false;
 		}
+		if (OnMap->IsWin())
+		{
+			//GMsg->AddMsg(CreateMsg(GResType::Menu_Quit));
+		}
 		GMsg->AddMsg(CreateMsg(GMType::Rend));
+
+
 		return true;
+	}
+
+	~GPlay()
+	{
+		if (OnMap)
+		{
+			delete OnMap;
+			OnMap = nullptr;
+		}
 	}
 };
 

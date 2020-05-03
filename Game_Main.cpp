@@ -2,12 +2,16 @@
 
 int main(void)
 {
-	/*while (true)
-	{
-		GInput->Update();
-		GOutput->moveto(GInput->Info.mouse_pos);
-		Sleep(50);
-	}*/
+
+	/*int n = 0;
+	cin >> n;
+	int num[100];
+	int score[100];
+
+	int total1 = 0, total2 = 0;
+	n=Input(num, score, 100);
+	total1=Total1(num,score,n);
+	total2=Total2(num,score,n)*/
 
 	try
 	{

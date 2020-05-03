@@ -32,6 +32,15 @@ GB_Msg CreateMsg(GMType mtype)
 	return rmsg;
 }
 
+int getmillis(SYSTEMTIME tstp)
+{
+	int rtime = tstp.wMilliseconds;
+	rtime += 60 * tstp.wSecond;
+	rtime += 60 * 60 * tstp.wHour;
+	rtime += 24 * 60 * 60 * tstp.wDay;
+	return rtime;
+}
+
 //三大全局对象的实现
 GTalker* GTalker::Instance = new GTalker;
 GListener* GListener::Instance = new GListener;
@@ -214,8 +223,8 @@ bool GListener::Update(void)
 
 void GMessageQueue::AddMsg(GB_Msg info)
 {
-	//if (info.type == GMType::Rend)
-		//MQueue.push(GB_Msg{ GMType::Clear });
+	if (info.type == GMType::Rend)
+		MQueue.push(GB_Msg{ GMType::Clear });
 	if (MQueue.empty() || MQueue.front().type != info.type)
 		MQueue.push(info);
 }

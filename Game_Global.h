@@ -5,6 +5,7 @@
 #include <map>
 #include <queue>
 #include <iostream>
+#include <fstream>
 #include <time.h>
 #include <conio.h>
 #include <Windows.h>
@@ -16,8 +17,12 @@ using std::pair;
 using std::map;
 using std::queue;
 
+using std::swap;
+
 using std::cout;
 using std::cin;
+using std::fstream;
+
 using std::endl;
 
 
@@ -42,9 +47,9 @@ enum class GStatus//储存游戏状态
 	Choose_Standard,//标准模式
 	Choose_Classic,//经典模式
 
-	Choose_Easy = 20,//简单难度
+	Choose_Master = 25,//简单难度
 	Choose_Normal = 30,//一般难度
-	Choose_Master = 40,//困难难度
+	Choose_Easy = 35,//困难难度
 
 	//派生类类型
 	ObjType_Play,//游戏进程相关
@@ -111,6 +116,7 @@ enum class GIType
 enum class GResType
 {
 	Play_OnGame,//游戏视图
+	Play_WinGame,//胜利动画
 
 	Choose_StartGame,//开始游戏Choose
 	Choose_ContinueGame,//继续游戏Choose
@@ -201,6 +207,8 @@ typedef struct Output_Info
 
 	vector<Str_Info>AllStrings;
 }GO_Msg;
+
+int getmillis(SYSTEMTIME tstp);
 
 
 

@@ -11,8 +11,11 @@ GControl::GControl()
 	
 	GResources[GResType::Play_OnGame] = new GPlay{
 
-	};
+	}; 
+	GResources[GResType::Play_WinGame] = new GPlay{
 
+	};
+	
 	GResources[GResType::Choose_StartGame] = new GChoose{
 		"开始游戏",
 		"不读取存档开始新进度",
@@ -53,9 +56,9 @@ GControl::GControl()
 
 	GResources[GResType::Lable_SetHard] = new GLable{
 		{
-			{ "简单模式","提供40个提示",GStatus::Choose_Easy },
+			{ "简单模式","提供35个提示",GStatus::Choose_Easy },
 			{ "一般模式","提供30个提示",GStatus::Choose_Normal },
-			{ "大师模式","提供20个提示",GStatus::Choose_Master }
+			{ "大师模式","提供25个提示",GStatus::Choose_Master }
 		},GMType::Change_Hard
 	};
 	GResources[GResType::Lable_SetMode] = new GLable{
@@ -100,4 +103,13 @@ GControl::GControl()
 
 
 	GMsg->AddMsg(CreateMsg(GMType::Rend));
+}
+
+GControl::~GControl()
+{
+	for (auto &node : GResources)
+	{
+		delete node.second;
+		node.second = nullptr;
+	}
 }

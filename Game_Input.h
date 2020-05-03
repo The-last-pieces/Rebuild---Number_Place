@@ -38,14 +38,6 @@ public:
 	//更新输入数据,若为可接受的输入则返回true
 	bool Update(void);
 private:
-	int getmillis(SYSTEMTIME tstp)
-	{
-		int rtime = tstp.wMilliseconds;
-		rtime += 60 * tstp.wSecond;
-		rtime += 60 * 60 * tstp.wHour;
-		rtime += 24 * 60 * 60 * tstp.wDay;
-		return rtime;
-	}
 	inline HANDLE WinHandle()
 	{
 		return GetStdHandle(STD_OUTPUT_HANDLE);
@@ -53,7 +45,7 @@ private:
 	void updateType()
 	{
 		Info.intype = GIType::None;
-		if (Info.onkey >= '1' && Info.onkey <= '9')
+		if (Info.onkey >= '0' && Info.onkey <= '9')
 			Info.intype = GIType::Number;
 		if (Info.mouse_hit)
 		{
@@ -88,13 +80,11 @@ private:
 	bool updateMouseInfo()
 	{
 		//按下 -> 放起 ->按下
-
-
-		static SYSTEMTIME lastcancle;
-		static SYSTEMTIME nowhit;
+		//static SYSTEMTIME lastcancle;
+		//static SYSTEMTIME nowhit;
 		const int subtime = 200;
 		Info.mouse_hit = false;
-		Info.mouse_hit_quick = false;
+		//Info.mouse_hit_quick = false;
 
 		INPUT_RECORD* mouseRec = nullptr;
 		DWORD res = 0, mescount = 0;
@@ -132,28 +122,28 @@ private:
 
 		if (GetAsyncKeyState(VK_LBUTTON) && 0x8000)
 		{
-			if (!Info.on_hit)
-			{
-				GetLocalTime(&nowhit);
-				int a = getmillis(nowhit), b = getmillis(lastcancle);
-				//cout << "\n nowhit:" << a << "  lastcancle:" << b << "        ";
-				if (getmillis(nowhit) - getmillis(lastcancle) < subtime)
-				{
-					Info.mouse_hit_quick = true;
-					//system("pause");
-				}
-			}
+			//if (!Info.on_hit)
+			//{
+			//	GetLocalTime(&nowhit);
+			//	int a = getmillis(nowhit), b = getmillis(lastcancle);
+			//	//cout << "\n nowhit:" << a << "  lastcancle:" << b << "        ";
+			//	if (getmillis(nowhit) - getmillis(lastcancle) < subtime)
+			//	{
+			//		Info.mouse_hit_quick = true;
+			//		//system("pause");
+			//	}
+			//}
 			Info.mouse_hit = true;
-			Info.on_hit = true;
+			//Info.on_hit = true;
 			return true;
 		}
-		else
+		/*else
 		{
 			if(Info.on_hit)
 				GetLocalTime(&lastcancle);
 
 			Info.on_hit = false;
-		}
+		}*/
 		return false;
 	}
 	void updateWindowInfo()
