@@ -35,7 +35,7 @@ GControl::GControl()
 	GResources[GResType::Choose_GameHelp] = new GChoose{
 		"游戏帮助",
 		"查看游戏帮助",
-		{CreateMsg(GResType::Menu_Help)}
+		{CreateMsg(GResType::Text_Help)}
 	};
 	GResources[GResType::Choose_QuitGame] = new GChoose{
 		"退出游戏",
@@ -78,6 +78,22 @@ GControl::GControl()
 		}
 	};
 
+
+
+	GResources[GResType::Text_Help] = new GText{
+		{
+			{ {{"游戏帮助//待补充"}} }
+		},
+		GResType::Menu_Main
+	};
+	GResources[GResType::Text_Win] = new GText{
+		{
+			{ {{"你获得了游戏胜利"}} }
+		},
+		GResType::Menu_Main
+	};
+
+
 	GResources[GResType::Menu_Setting] = new GMenu{
 		{
 			GResources[GResType::Lable_SetHard],
@@ -94,7 +110,7 @@ GControl::GControl()
 	};
 	GResources[GResType::Choose_GameHelp] = new GMenu{
 		{
-
+			GResources[GResType::Text_Help]
 		},
 		GResType::Menu_Main
 	};

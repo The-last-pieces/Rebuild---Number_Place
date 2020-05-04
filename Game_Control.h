@@ -92,12 +92,13 @@ private:
 			break;
 		case GMType::Change_View:
 			whichres = ToDeal.ex.newshow;
-			if (OnView)
-				OnView->OnMe = false;
 			if (GResources[whichres])
 			{
+				if (OnView)
+					OnView->OnMe = false;
 				OnView = GResources[whichres];
-				OnView->OnMe = true;
+				if (OnView)
+					OnView->OnMe = true;
 			}
 			break;
 		case GMType::Change_Hard:

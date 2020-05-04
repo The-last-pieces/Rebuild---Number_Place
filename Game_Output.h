@@ -45,8 +45,8 @@ private:
 	void moveto(GPoint pos)
 	{
 		COORD temp;
-		temp.X = pos.Vertical;
-		temp.Y = pos.Horizontal;
+		temp.X = (SHORT)pos.Vertical;
+		temp.Y = (SHORT)pos.Horizontal;
 		SetConsoleCursorPosition(GInput->Info.winhandle, temp);
 	}
 	void DealInfo(GO_Msg& info);//格式化处理

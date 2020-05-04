@@ -86,8 +86,8 @@ private:
 		Info.mouse_hit = false;
 		//Info.mouse_hit_quick = false;
 
-		INPUT_RECORD* mouseRec = nullptr;
-		DWORD res = 0, mescount = 0;
+		//INPUT_RECORD* mouseRec = nullptr;
+		//DWORD mescount = 0;
 
 		POINT curpos;
 		GetCursorPos(&curpos);

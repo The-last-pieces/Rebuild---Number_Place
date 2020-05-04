@@ -29,7 +29,7 @@ public:
 		array<array<bool, 2 * Map_Size - 1>, 2 * Map_Size - 1> rlines = { 0 };//右上左下
 
 	private:
-		bool dealmap(array<array<int, Map_Size>, Map_Size>& minfo, int xs, int ys)
+		bool dealmap(array<array<int, Map_Size>, Map_Size>& minfo)//, int xs, int ys)
 		{
 			if (anscounts > 1)
 				return false;
@@ -61,7 +61,7 @@ public:
 									blocks[k][num] = true;
 								minfo[x][y] = 1 + num;// 下标加1
 
-								if (dealmap(minfo, x, y))
+								if (dealmap(minfo))//, x, y))
 								{
 									anscounts++;
 								}
@@ -94,7 +94,7 @@ public:
 			if (pos == 0)
 			{
 				int val = 0, num = 0, k = 0;
-				bool hmp[9] = { 0 };
+				//bool hmp[9] = { 0 };
 				int rdnum[9] = { 1,2,3,4,5,6,7,8,9 };
 				for (int i = 0; i < 20; ++i)
 				{
@@ -193,7 +193,7 @@ public:
 				}
 			}
 
-			dealmap(temp, 0, 0);
+			dealmap(temp);//, 0, 0);
 			if (anscounts == 1)
 			{
 				minfo = canans;

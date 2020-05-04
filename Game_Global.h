@@ -132,7 +132,9 @@ enum class GResType
 	Menu_Main,//主菜单
 	Menu_Setting,//游戏设置菜单
 	Menu_Quit,//处理退出行为
-	Menu_Help//游戏帮助
+
+	Text_Help,//游戏帮助
+	Text_Win//胜利提示信息
 };
 
 //一些公用类的定义

@@ -6,13 +6,45 @@ class GView
 {
 public:
 	bool OnMe = false;
+	GResType Father = GResType::Menu_Main;
 public:
 	virtual GO_Msg Stringify() = 0;
 	virtual bool Behavior() = 0;
+	virtual ~GView() {}
 };
 
 //一个选项,指向一个GView 指针 
 //可以是任意GMenu */GPlay *
+
+class GText:public GView
+{
+private:
+	GO_Msg txt;
+
+public:
+	GText(GO_Msg _txt, GResType _Father) :txt(_txt) 
+	{
+		Father = _Father;
+	}
+	GO_Msg Stringify()
+	{
+		return txt;
+	}
+	bool Behavior()
+	{
+		switch (GInput->Info.intype)
+		{
+		case GIType::Back:
+			GMsg->AddMsg(CreateMsg(Father));
+			break;
+		default:
+			return false;
+		}
+		GMsg->AddMsg(CreateMsg(GMType::Rend));
+		return true;
+	}
+};
+
 class GChoose :public GView
 {
 private:
@@ -114,7 +146,7 @@ class GPlay :public GView
 {
 	int ChooseNum = 0;
 	GPoint ChoosePos;
-	GResType Father=GResType::Menu_Main;
+	//GResType Father=GResType::Menu_Main;
 private:
 	GPoint TransformHit(GPoint pos)
 	{
@@ -146,7 +178,7 @@ public:
 
 		GO_Msg mtemp = OnMap->Stringify();
 		string stemp = "当前选择的数字为:";
-		stemp.push_back(ChooseNum + '0');
+		stemp.push_back(char(ChooseNum + '0'));
 		mtemp.AllStrings.push_back({ stemp,{},GOType::GameHint });
 		return mtemp;
 	}
@@ -176,7 +208,7 @@ public:
 		}
 		if (OnMap->IsWin())
 		{
-			//GMsg->AddMsg(CreateMsg(GResType::Menu_Quit));
+			GMsg->AddMsg(CreateMsg(GResType::Text_Win));
 		}
 		GMsg->AddMsg(CreateMsg(GMType::Rend));
 
@@ -198,7 +230,7 @@ public:
 //包含多个GChoose
 class GMenu :public GView
 {
-	GResType Father;
+	//GResType Father;
 private:
 	//vector<GResType>AllLinks;
 	vector<GView*>AllLinks;
@@ -206,8 +238,9 @@ private:
 	const int LinksCount;
 public:
 	GMenu(vector<GView*>_AllLinks, GResType  _Father = GResType::Menu_Main)
-		:AllLinks(_AllLinks), LinksCount(_AllLinks.size()), Father(_Father)
+		:AllLinks(_AllLinks), LinksCount(_AllLinks.size())
 	{
+		Father = _Father;
 		if (AllLinks.size())
 			AllLinks[0]->OnMe = true;
 	}
