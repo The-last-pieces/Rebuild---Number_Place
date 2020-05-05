@@ -4,7 +4,6 @@
 GO_Msg GMap::Stringify()
 {
 	GO_Msg info;
-	//info.AllStrings.push_back({ "\033[32m" ,{},GOType::GameTable });
 	for (int x = 0; x < 13; ++x)
 	{
 		string temp;
@@ -30,6 +29,5 @@ GO_Msg GMap::Stringify()
 		}
 		info.AllStrings.push_back({ temp ,{},GOType::GameTable });
 	}
-	//info.AllStrings.push_back({ "\033[0m" ,{},GOType::GameTable });
 	return info;
 }

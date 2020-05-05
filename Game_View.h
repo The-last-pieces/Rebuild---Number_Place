@@ -14,13 +14,12 @@ public:
 };
 
 //一个选项,指向一个GView 指针 
-//可以是任意GMenu */GPlay *
+//可以是任意GMenu */GPlay */GText *
 
 class GText:public GView
 {
 private:
 	GO_Msg txt;
-
 public:
 	GText(GO_Msg _txt, GResType _Father) :txt(_txt) 
 	{
@@ -51,7 +50,6 @@ private:
 	string Column;
 	string Explanation;
 private:
-	//GView* Link = nullptr;
 	vector<GB_Msg> BondAction = { CreateMsg(GMType::NOP) };//绑定的附加事件
 public:
 	GChoose(string _Column, string _Explanation, vector<GB_Msg> _BondAction) :
@@ -97,7 +95,7 @@ class GLable :public GView
 	typedef struct {
 		string Column;
 		string Explanation;
-		GStatus Mode;
+		GSetType Mode;
 	}GSet;
 	const int SetsCount;
 private:
@@ -146,7 +144,6 @@ class GPlay :public GView
 {
 	int ChooseNum = 0;
 	GPoint ChoosePos;
-	//GResType Father=GResType::Menu_Main;
 private:
 	GPoint TransformHit(GPoint pos)
 	{
@@ -156,18 +153,19 @@ private:
 		rpt.Vertical = pos.Vertical - lr;
 		rpt.Horizontal = pos.Horizontal - ud;
 
+		if (!(rpt.Horizontal % 4 && rpt.Vertical))
+			return { -1,-1 };
+
 		rpt.Vertical -= rpt.Vertical / 4 + 1;
 		rpt.Horizontal -= rpt.Horizontal / 4 + 1;
-		std::swap(rpt.Vertical, rpt.Horizontal);
-		cout << "\n x:" << rpt.Vertical << " y:" << rpt.Horizontal << "     ";
+		swap(rpt.Vertical, rpt.Horizontal);
 		return rpt;
-		//{ (horizontal() - int(node.second[index].StrView.size())) / 2, (vertical() - int(node.second.size())) / 2 + index };
 	}
 public:
 	GMap* OnMap = nullptr;
 	bool startgame = false;
 
-	void CreateMap(GStatus hard,GStatus mode)
+	void CreateMap(GSetType hard,GSetType mode)
 	{
 		OnMap = new GMap(hard,mode);
 	}
@@ -208,10 +206,15 @@ public:
 		}
 		if (OnMap->IsWin())
 		{
+			GMsg->AddMsg(CreateMsg(GMType::Rend));
+			GMsg->AddMsg(CreateMsg(5));
 			GMsg->AddMsg(CreateMsg(GResType::Text_Win));
+			GMsg->AddMsg(CreateMsg(GMType::Rend));
+			GMsg->AddMsg(CreateMsg(5));
+			GMsg->AddMsg(CreateMsg(GMType::Exit_Process));
 		}
-		GMsg->AddMsg(CreateMsg(GMType::Rend));
-
+		else
+			GMsg->AddMsg(CreateMsg(GMType::Rend));
 
 		return true;
 	}
@@ -230,9 +233,7 @@ public:
 //包含多个GChoose
 class GMenu :public GView
 {
-	//GResType Father;
 private:
-	//vector<GResType>AllLinks;
 	vector<GView*>AllLinks;
 	int NowSelect = 0;
 	const int LinksCount;
@@ -259,7 +260,6 @@ public:
 				);
 		}
 		return info;
-		//return { {{AllLinks[NowSelect].Column}} };
 	}
 	bool Behavior()
 	{

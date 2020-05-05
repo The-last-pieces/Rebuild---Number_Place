@@ -6,6 +6,7 @@
 #include <queue>
 #include <iostream>
 #include <fstream>
+#include <thread>
 #include <time.h>
 #include <conio.h>
 #include <Windows.h>
@@ -16,57 +17,26 @@ using std::array;
 using std::pair;
 using std::map;
 using std::queue;
+using std::thread;
+using std::fstream;
 
 using std::swap;
+using std::max;
+using std::endl;
 
 using std::cout;
 using std::cin;
-using std::fstream;
 
-using std::endl;
-
-
-
-//游戏状态的枚举
-enum class GStatus//储存游戏状态
+//游戏设置的枚举
+enum class GSetType//储存游戏设置
 {
-	Exit_with_save,//退出程序并保存
-	Exit_with_notsave,//直接退出程序
-
-	//三个特殊状态
-	Game_Playing,
-	Game_Saving,
-	Game_Loading,
-
-	//一个数值选项
-	Lable_HintCount,//初始提示数
-
-	Choose_NewGame,//新游戏
-	Choose_LoadGame,//读档
-
 	Choose_Standard,//标准模式
 	Choose_Classic,//经典模式
 
 	Choose_Master = 25,//简单难度
 	Choose_Normal = 30,//一般难度
 	Choose_Easy = 35,//困难难度
-
-	//派生类类型
-	ObjType_Play,//游戏进程相关
-	ObjType_Menu,//转移目录
-	ObjType_Choose,
-	ObjType_Lable,//设置游戏参数
-	ObjType_Base,
-
-	//下为菜单项
-	MainMenu,//主菜单
-	OptionMenu,//难度选项菜单
-	SelfdefMenu,//自定义难度界面
-	PlayModeMenu,//选择游戏模式
-	QuitMenu,//处理退出行为
-	HelpMenu//游戏帮助
 };
-
 //信息类型枚举
 enum class GMType
 {
@@ -76,12 +46,10 @@ enum class GMType
 	Change_View,//切换OnView
 	Change_Hard,//切换Hard
 	Change_PMode,//切换PMode
-	Prompt,//提示信息,强制切换视图
-	SetNum,//填数字
-	GetHint,//获取提示
 	GetAnswer,//获取答案
 	Save,//存档
 	Load,//读档
+	Sleep,//休眠
 	NOP//空操作
 };
 //输出格式枚举
@@ -90,10 +58,10 @@ enum class GOType
 	Center,
 	NoBetween_Center,
 	Explanation,
-	Left_top,
-	Left_bottom,
-	Right_top,
-	Right_bottom,
+	//Left_top,
+	//Left_bottom,
+	//Right_top,
+	//Right_bottom,
 	SelfDef,
 	GameTable,
 	GameHint
@@ -109,7 +77,7 @@ enum class GIType
 	Down_Page,
 	Left_Lable,
 	Right_Lable,
-	Quick_Mouse,
+	//Quick_Mouse,
 	Mouse_Left
 };
 //视图资源枚举
@@ -143,15 +111,10 @@ enum class GResType
 class GPoint
 {
 public:
-	int Vertical;//从上至下距离
-	int Horizontal;//从左至右距离
-	GPoint(int _Vertical = 0, int _Horizontal = 0) :
-		Vertical(_Vertical), Horizontal(_Horizontal) {}
-	GPoint Transform()
-	{
-		//真实坐标和本地坐标的转换
-
-	}
+	int Vertical = 0;//从上至下距离
+	int Horizontal = 0;//从左至右距离
+	/*GPoint(int _Vertical = 0, int _Horizontal = 0) :
+		Vertical(_Vertical), Horizontal(_Horizontal) {}*/
 };
 
 const int FPS = 20;//刷新率
@@ -168,10 +131,9 @@ typedef union ExInfo
 	NumInfo setnum;
 
 	GResType newshow;
-	//void* newshow;
-
-	GStatus hard;
-	GStatus pmode;
+	GSetType hard;
+	GSetType pmode;
+	DWORD sleeptime;
 
 	ExInfo()
 	{

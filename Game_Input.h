@@ -33,6 +33,9 @@ public:
 	static GListener* getInstance()
 	{
 		//保持每个GInput同步
+		if (!Instance)
+			Instance = new GListener;
+
 		return Instance;
 	}
 	//更新输入数据,若为可接受的输入则返回true
@@ -48,11 +51,7 @@ private:
 		if (Info.onkey >= '0' && Info.onkey <= '9')
 			Info.intype = GIType::Number;
 		if (Info.mouse_hit)
-		{
 			Info.intype = GIType::Mouse_Left;
-			if (Info.mouse_hit_quick)
-				Info.intype = GIType::Quick_Mouse;
-		}
 		if (Info.onkey == VK_RETURN)
 			Info.intype = GIType::Confirm;
 		if (Info.onkey == 'q' || Info.onkey == 'Q' || Info.onkey == VK_ESCAPE)
@@ -79,71 +78,18 @@ private:
 	}
 	bool updateMouseInfo()
 	{
-		//按下 -> 放起 ->按下
-		//static SYSTEMTIME lastcancle;
-		//static SYSTEMTIME nowhit;
-		const int subtime = 200;
 		Info.mouse_hit = false;
-		//Info.mouse_hit_quick = false;
-
-		//INPUT_RECORD* mouseRec = nullptr;
-		//DWORD mescount = 0;
-
 		POINT curpos;
 		GetCursorPos(&curpos);
 		
 		//更新真实坐标
 		Info.mouse_pos = { (curpos.x - Info.basepoint.Vertical) / 8,(curpos.y - Info.basepoint.Horizontal) / 16 };
 
-		//cout<< "\n  x:" << curpos.x << " y:" << curpos.y<<"         ";
-		//cout << "\n  hx:" << Info.mouse_pos.Horizontal << " vy:" << Info.mouse_pos.Vertical << "         ";
-		//GetNumberOfConsoleInputEvents(GetStdHandle(STD_INPUT_HANDLE), &mescount);
-		//if (mescount)
-		//{
-		//	mouseRec = (INPUT_RECORD*)malloc(sizeof(INPUT_RECORD) * mescount);
-		//	ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), mouseRec, mescount, &res);
-		//}
-		//for(DWORD i=0;i< mescount;++i)
-		//{
-		//	cout << "\n   " << mouseRec[i].EventType;
-		//	if (mouseRec[i].EventType == MOUSE_EVENT)
-		//	{
-		//		Info.mouse_pos.Horizontal = mouseRec[i].Event.MouseEvent.dwMousePosition.X;
-		//		Info.mouse_pos.Vertical = mouseRec[i].Event.MouseEvent.dwMousePosition.Y;
-		//		Info.left_mouse_down = (mouseRec[i].Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED);
-		//		Info.right_mouse_down = (mouseRec[i].Event.MouseEvent.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED);
-		//		//FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
-		//		return true;
-		//	}
-		//	//FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
-		//}
-
-		
-
 		if (GetAsyncKeyState(VK_LBUTTON) && 0x8000)
 		{
-			//if (!Info.on_hit)
-			//{
-			//	GetLocalTime(&nowhit);
-			//	int a = getmillis(nowhit), b = getmillis(lastcancle);
-			//	//cout << "\n nowhit:" << a << "  lastcancle:" << b << "        ";
-			//	if (getmillis(nowhit) - getmillis(lastcancle) < subtime)
-			//	{
-			//		Info.mouse_hit_quick = true;
-			//		//system("pause");
-			//	}
-			//}
 			Info.mouse_hit = true;
-			//Info.on_hit = true;
 			return true;
 		}
-		/*else
-		{
-			if(Info.on_hit)
-				GetLocalTime(&lastcancle);
-
-			Info.on_hit = false;
-		}*/
 		return false;
 	}
 	void updateWindowInfo()
@@ -154,7 +100,7 @@ private:
 		RECT rect;
 		GetWindowRect(GetConsoleWindow(), &rect);
 		Info.basepoint = { rect.left + 7, rect.top + 31 };
-		
+
 		//更新缓冲区大小
 		CONSOLE_SCREEN_BUFFER_INFO Pif;
 		GetConsoleScreenBufferInfo(Info.winhandle, &Pif);
@@ -170,14 +116,10 @@ private:
 		}
 		SetConsoleScreenBufferSize(Info.winhandle, Pif.dwSize);
 
-		//cout << "\n  x:" << rect.left << " y:" << rect.top << "         ";
-
-		
-
-		//CONSOLE_CURSOR_INFO CursorInfo;
-		//GetConsoleCursorInfo(Info.winhandle, &CursorInfo);//获取控制台光标信息
-		//CursorInfo.bVisible = false; //隐藏控制台光标
-		//SetConsoleCursorInfo(Info.winhandle, &CursorInfo);//设置控制台光标状态
+		CONSOLE_CURSOR_INFO cursorinfo;
+		GetConsoleCursorInfo(Info.winhandle, &cursorinfo);//获取控制台光标信息
+		cursorinfo.bVisible = false; //隐藏控制台光标
+		SetConsoleCursorInfo(Info.winhandle, &cursorinfo);//设置控制台光标状态
 
 	}
 };

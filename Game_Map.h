@@ -13,14 +13,13 @@ class GMap
 	const char VerticalChar = '|';
 	const char BlockChar = 'N';
 public:
-	//static const size_t Map_Size = 9;
 	class GMapWorker
 	{
 	public:
 		array<array<int, Map_Size>, Map_Size> canans = { 0 };
 		int anscounts = 0;
 	private:
-		GStatus Gmode = GStatus::Choose_Classic;
+		GSetType Gmode = GSetType::Choose_Classic;
 
 		array<array<bool, Map_Size>, Map_Size> blocks = { 0 };
 		array<array<bool, Map_Size>, Map_Size> cols = { 0 };
@@ -29,7 +28,7 @@ public:
 		array<array<bool, 2 * Map_Size - 1>, 2 * Map_Size - 1> rlines = { 0 };//右上左下
 
 	private:
-		bool dealmap(array<array<int, Map_Size>, Map_Size>& minfo)//, int xs, int ys)
+		bool dealmap(array<array<int, Map_Size>, Map_Size>& minfo)
 		{
 			if (anscounts > 1)
 				return false;
@@ -48,7 +47,7 @@ public:
 								!rows[x][num] &&
 								!blocks[k][num] &&
 								(
-									Gmode != GStatus::Choose_Classic ||
+									Gmode != GSetType::Choose_Classic ||
 									(!rlines[x + y][num] && !llines[Map_Size - 1 - x + y][num])
 									)
 								)
@@ -61,7 +60,7 @@ public:
 									blocks[k][num] = true;
 								minfo[x][y] = 1 + num;// 下标加1
 
-								if (dealmap(minfo))//, x, y))
+								if (dealmap(minfo))
 								{
 									anscounts++;
 								}
@@ -74,7 +73,7 @@ public:
 							}
 						}
 						return false;// a[i][j]==0时，l发现都不能填进去
-					}// the end of a[i][j]==0
+					}
 				}
 			}
 			canans = minfo;
@@ -94,7 +93,6 @@ public:
 			if (pos == 0)
 			{
 				int val = 0, num = 0, k = 0;
-				//bool hmp[9] = { 0 };
 				int rdnum[9] = { 1,2,3,4,5,6,7,8,9 };
 				for (int i = 0; i < 20; ++i)
 				{
@@ -104,7 +102,7 @@ public:
 				{
 					val = -rdnum[i], num = abs(val) - 1, k = x / 3 * 3 + y / 3;
 					if (!(
-						(GStatus::Choose_Classic != Gmode ||
+						(GSetType::Choose_Classic != Gmode ||
 						(rlines[x + y][num] ||
 						llines[Map_Size - 1 - x + y][num])) ||
 						rows[x][num] ||
@@ -126,7 +124,7 @@ public:
 			return false;
 		}
 	public:
-		GMapWorker(GStatus _mode):Gmode(_mode)
+		GMapWorker(GSetType _mode):Gmode(_mode)
 		{
 
 		}
@@ -154,7 +152,7 @@ public:
 							return false;
 						blocks[k][val] = true;
 
-						if (Gmode == GStatus::Choose_Classic)
+						if (Gmode == GSetType::Choose_Classic)
 						{
 							k = x + y;
 
@@ -193,7 +191,7 @@ public:
 				}
 			}
 
-			dealmap(temp);//, 0, 0);
+			dealmap(temp);
 			if (anscounts == 1)
 			{
 				minfo = canans;
@@ -209,7 +207,6 @@ public:
 		bool getamap(array<array<int, Map_Size>, Map_Size>& mp, int base)
 		{
 			srand(unsigned int(time(NULL)));
-			base = 30;
 			while (1)
 			{
 				mp.fill({ 0 });
@@ -234,49 +231,21 @@ public:
 		}
 	} worker;
 
-	GStatus hard;
-	GStatus mode;
+	GSetType hard;
+	GSetType mode;
 
 	array<array<int, Map_Size>, Map_Size> map_info = {};
 private:
 	array<array<int, Map_Size>, Map_Size> answer = {};
-	/*{
-		{
-		0,0,0,1,0,0,0,0,0,
-		0,4,0,0,7,0,0,2,3,
-		6,0,0,4,0,2,0,0,1,
-		0,3,0,0,0,0,0,0,7,
-		0,0,8,0,0,4,0,3,0,
-		0,6,0,0,1,0,4,0,0,
-		0,0,0,0,6,3,9,1,0,
-		7,0,0,5,0,0,0,0,2,
-		0,8,0,0,2,0,0,4,0
-		}
-	};*/
-	
-	/*{
-		{
-		0,0,0,1,0,0,0,0,0,
-		0,4,0,0,7,0,0,2,3,
-		6,0,0,4,0,2,0,0,1,
-		0,3,0,0,0,0,0,0,7,
-		0,0,8,0,0,4,0,3,0,
-		0,6,0,0,1,0,4,0,0,
-		0,0,0,0,6,3,9,1,0,
-		7,0,0,5,0,0,0,0,2,
-		0,8,0,0,2,0,0,4,0
-		}
-	};*/
 public:
-	GMap() :worker(GStatus::Choose_Standard), hard(GStatus::Choose_Normal), mode(GStatus::Choose_Standard)
+	GMap() :worker(GSetType::Choose_Standard), hard(GSetType::Choose_Normal), mode(GSetType::Choose_Standard)
 	{
 
 	}
-	GMap(GStatus _hard, GStatus _mode = GStatus::Choose_Standard) :worker(_mode), hard(GStatus::Choose_Normal), mode(_mode)
+	GMap(GSetType _hard, GSetType _mode = GSetType::Choose_Standard) :worker(_mode), hard(GSetType::Choose_Normal), mode(_mode)
 	{
 		//初始化地图
 		worker.getamap(map_info, int(_hard));
-
 	}
 private:
 	int Size()

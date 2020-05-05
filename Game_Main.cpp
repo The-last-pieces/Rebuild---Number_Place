@@ -7,9 +7,9 @@ int main(void)
 		GControl test;
 		test.OnLoad();
 	}
-	catch (const std::exception&)
+	catch (const std::exception& err)
 	{
-
+		
 	}
 	return 0;
 }

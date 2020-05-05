@@ -24,6 +24,8 @@ public:
 	static GMessageQueue* getInstance()
 	{
 		//保持每个GInput同步
+		if (!Instance)
+			Instance = new GMessageQueue;
 		return Instance;
 	}
 	void AddMsg(GB_Msg info);
@@ -32,8 +34,8 @@ public:
 
 #define GMsg GMessageQueue::getInstance()
 
-
+GB_Msg CreateMsg(double sleeptime);//Sleep信息
 GB_Msg CreateMsg(GResType ptr);//Change_View信息
 GB_Msg CreateMsg(ExInfo::NumInfo numinfo);//Set_Num信息
-GB_Msg CreateMsg(GStatus mode, GMType mtype);//Change_Mode信息
+GB_Msg CreateMsg(GSetType mode, GMType mtype);//Change_Mode信息
 GB_Msg CreateMsg(GMType mtype);//普通信息

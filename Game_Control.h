@@ -5,8 +5,8 @@
 class GControl
 {
 private:
-	GStatus Hard = GStatus::Choose_Easy;//游戏难度
-	GStatus PMode = GStatus::Choose_Classic;//游戏类型
+	GSetType Hard = GSetType::Choose_Easy;//游戏难度
+	GSetType PMode = GSetType::Choose_Classic;//游戏类型
 	GView* OnView = nullptr;
 	GResType whichres = GResType::Menu_Main;
 	map<GResType, GView*>GResources;
@@ -61,9 +61,9 @@ private:
 					int temp=0;
 					
 					fs >> temp;
-					mp->OnMap->hard = (GStatus)temp;
+					mp->OnMap->hard = (GSetType)temp;
 					fs >> temp;
-					mp->OnMap->mode = (GStatus)temp;
+					mp->OnMap->mode = (GSetType)temp;
 
 					for (int i = 0; i < 9; ++i)
 					{
@@ -107,21 +107,14 @@ private:
 		case GMType::Change_PMode:
 			PMode = ToDeal.ex.pmode;
 			break;
-		//case GMType::SetNum:
-		//	break;
-		case GMType::GetHint:
-			break;
-		//case GMType::GetAnswer:
-		//	break;
 		case GMType::Save:
 			SaveProcess();
 			break;
 		case GMType::Load:
 			LoadProcess();
 			break;
-		//case GMType::Prompt:
-		//	Prompt();
-			break;
+		case GMType::Sleep:
+			Sleep(ToDeal.ex.sleeptime);
 		case GMType::NOP:
 		default:
 			break;
@@ -134,16 +127,26 @@ private:
 			return;
 		OnView->Behavior();
 	}
-	void Prompt()
-	{
-		//特殊渲染
-		
-	}
 	void Render()
 	{
 		if (!OnView)
 			return;
 		GOutput->Render(OnView->Stringify());
+	}
+	void GameMapInitialize()
+	{
+		if (whichres == GResType::Play_OnGame)
+		{
+			GPlay* temp = dynamic_cast<GPlay*>(OnView);
+			if (temp)
+			{
+				if (!temp->startgame)
+				{
+					temp->CreateMap(Hard, PMode);
+					temp->startgame = true;
+				}
+			}
+		}
 	}
 public:
 	GControl(); 
@@ -152,25 +155,12 @@ public:
 	{
 		while (true)
 		{
-			if (whichres == GResType::Play_OnGame)
-			{
-				GPlay* temp = dynamic_cast<GPlay*>(OnView);
-				if (temp)
-				{
-					if (!temp->startgame)
-					{
-						temp->CreateMap(Hard, PMode);
-						temp->startgame = true;
-					}
-				}
-			}
+			GameMapInitialize();
 
 			//抓取到可能有效的输入才进行处理
 			GInput->Update();
 			if (GInput->Info.intype!=GIType::None)
 				DealInput();
-
-			GOutput->backgroud();
 			GB_Msg ToDeal = GMsg->PopMsg();//获取队首消息
 			if (ToDeal.type == GMType::Exit_Process)
 				break;//循环至游戏结束
@@ -179,7 +169,5 @@ public:
 
 			Sleep(1000 / FPS);
 		}
-		
-		//释放资源
 	}
 };

@@ -3,11 +3,6 @@
 GControl::GControl()
 {
 	//GView数据初始化
-
-	//初始化GChoose
-
-	//GResources[GResType::OnPlay] = new GPlay();
-
 	
 	GResources[GResType::Play_OnGame] = new GPlay{
 
@@ -56,15 +51,15 @@ GControl::GControl()
 
 	GResources[GResType::Lable_SetHard] = new GLable{
 		{
-			{ "简单模式","提供35个提示",GStatus::Choose_Easy },
-			{ "一般模式","提供30个提示",GStatus::Choose_Normal },
-			{ "大师模式","提供25个提示",GStatus::Choose_Master }
+			{ "简单模式","提供35个提示",GSetType::Choose_Easy },
+			{ "一般模式","提供30个提示",GSetType::Choose_Normal },
+			{ "大师模式","提供25个提示",GSetType::Choose_Master }
 		},GMType::Change_Hard
 	};
 	GResources[GResType::Lable_SetMode] = new GLable{
 		{
-			{"标准模式","标准模式:国际上统一的标准,每行,每列,每个九宫格都不能有重复数字",GStatus::Choose_Standard },
-			{"经典模式","经典模式:最常见的数独,每行,每列,每个斜边,每个九宫格都不能有重复数字",GStatus::Choose_Classic},
+			{"标准模式","标准模式:国际上统一的标准,每行,每列,每个九宫格都不能有重复数字",GSetType::Choose_Standard },
+			{"经典模式","经典模式:最常见的数独,每行,每列,每个斜边,每个九宫格都不能有重复数字",GSetType::Choose_Classic},
 		},GMType::Change_Hard
 	};
 
@@ -78,8 +73,6 @@ GControl::GControl()
 		}
 	};
 
-
-
 	GResources[GResType::Text_Help] = new GText{
 		{
 			{ {{"游戏帮助//待补充"}} }
@@ -92,7 +85,6 @@ GControl::GControl()
 		},
 		GResType::Menu_Main
 	};
-
 
 	GResources[GResType::Menu_Setting] = new GMenu{
 		{
@@ -115,9 +107,6 @@ GControl::GControl()
 		GResType::Menu_Main
 	};
 
-	//GResources[GResType::]
-
-
 	GMsg->AddMsg(CreateMsg(GMType::Rend));
 }
 
@@ -125,7 +114,10 @@ GControl::~GControl()
 {
 	for (auto &node : GResources)
 	{
-		delete node.second;
-		node.second = nullptr;
+		if (node.second)
+		{
+			delete node.second;
+			node.second = nullptr;
+		}
 	}
 }
