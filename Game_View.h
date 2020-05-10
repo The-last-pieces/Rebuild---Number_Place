@@ -168,6 +168,7 @@ public:
 	void CreateMap(GSetType hard,GSetType mode)
 	{
 		OnMap = new GMap(hard,mode);
+		GMsg->AddMsg(CreateMsg(GMType::Rend));
 	}
 	GO_Msg Stringify()
 	{
