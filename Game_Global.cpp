@@ -52,7 +52,6 @@ void GTalker::backgroud()
 	const string backstring = "@%&";
 	//»æÖÆ¶¯Ì¬±³¾°
 	int offpos = 0;
-
 	while (true)
 	{
 		++offpos;
