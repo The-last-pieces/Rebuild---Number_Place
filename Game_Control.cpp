@@ -2,14 +2,16 @@
 
 GControl::GControl()
 {
+	if (_access(R"(.\data)", 0) == -1)
+	{
+		_mkdir(R"(.\data)");
+	}
+
 	//GView数据初始化
 	
 	GResources[GResType::Play_OnGame] = new GPlay{
 
 	}; 
-	GResources[GResType::Play_WinGame] = new GPlay{
-
-	};
 	
 	GResources[GResType::Choose_StartGame] = new GChoose{
 		"开始游戏",

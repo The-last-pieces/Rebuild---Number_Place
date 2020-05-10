@@ -8,10 +8,12 @@ private:
 	//唯一实例化对象,编译期确定
 	static GTalker* Instance;
 private:
-	//static string backstring = "@%&";
 	const int between_point = 4;//游标间距
-
+	
 	thread keepback;
+	thread keeppaint;
+	bool OnPaint = false;
+
 private:
 	/*vector<string> getbackstring()
 	{
@@ -40,14 +42,37 @@ private:
 		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), temp);
 	}
 	void DealInfo(GO_Msg& info);//格式化处理
+
+	template<typename T>
+	static void outstring(const T& what)
+	{
+		cout << what;
+		OnPaint = false;
+	}
+
+	static queue<GO_Msg> showqueue;
+	static void Painter()
+	{
+		while (true)
+		{
+			if (showqueue.empty())
+				continue;
+			for (const auto& node : showqueue.front().AllStrings)
+			{
+				moveto(node.pos);
+				cout << node.StrView;
+			}
+			showqueue.pop();
+		}
+	}
 private:
 	//防止意外的修改对象
-	GTalker() :keepback(backgroud)
+	GTalker() :keeppaint(Painter), keepback(backgroud)
 	{
+		//a.empty();
 		system("mode con lines=30 cols=90");
-		system("color e9");
-
 		keepback.detach();
+		keeppaint.detach();
 	}
 	~GTalker()
 	{
@@ -65,7 +90,6 @@ public:
 	//根据string串渲染图像
 	void Render(GO_Msg info);//渲染器
 	static void backgroud();
-
 };
 
 #define GOutput GTalker::getInstance()

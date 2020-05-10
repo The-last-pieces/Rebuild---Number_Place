@@ -1,4 +1,6 @@
 #pragma once
+//#define debug
+
 #include <vector>
 #include <string>
 #include <array>
@@ -7,8 +9,11 @@
 #include <iostream>
 #include <fstream>
 #include <thread>
+#include <atomic>
 #include <time.h>
 #include <conio.h>
+#include <io.h>
+#include <direct.h>
 #include <Windows.h>
 
 using std::vector;
@@ -77,14 +82,12 @@ enum class GIType
 	Down_Page,
 	Left_Lable,
 	Right_Lable,
-	//Quick_Mouse,
 	Mouse_Left
 };
 //视图资源枚举
 enum class GResType
 {
 	Play_OnGame,//游戏视图
-	Play_WinGame,//胜利动画
 
 	Choose_StartGame,//开始游戏Choose
 	Choose_ContinueGame,//继续游戏Choose
@@ -113,11 +116,9 @@ class GPoint
 public:
 	int Vertical = 0;//从上至下距离
 	int Horizontal = 0;//从左至右距离
-	/*GPoint(int _Vertical = 0, int _Horizontal = 0) :
-		Vertical(_Vertical), Horizontal(_Horizontal) {}*/
 };
 
-const int FPS = 20;//刷新率
+const int FPS = 10;//刷新率
 
 //类之间的通信
 typedef union ExInfo
@@ -154,8 +155,6 @@ typedef struct Input_Info
 	GPoint basepoint = { 0,0 };
 	HANDLE winhandle = nullptr;
 	bool mouse_hit = false;
-	bool on_hit = false;
-	bool mouse_hit_quick = false;
 	int onkey = 0;
 }GI_Msg;
 //类与渲染器的通信
@@ -166,13 +165,13 @@ typedef struct Output_Info
 		string StrView;//图形
 		GPoint pos;//位置
 		GOType type = GOType::Center;//输出格式
-
+		int offlen = 0;//偏移量
 	}Str_Info;
 
 	vector<Str_Info>AllStrings;
 }GO_Msg;
 
-int getmillis(SYSTEMTIME tstp);
+
 
 
 

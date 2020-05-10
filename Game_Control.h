@@ -11,7 +11,7 @@ private:
 	GResType whichres = GResType::Menu_Main;
 	map<GResType, GView*>GResources;
 
-	const string savepath = R"(C:\Users\Administrator\Desktop\save.txt)";
+	const string savepath = R"(.\data\save.txt)";
 private:
 	void SaveProcess()
 	{
@@ -51,13 +51,12 @@ private:
 			{
 				if (!mp->OnMap)
 				{
-					mp->OnMap = new GMap;
-					mp->startgame = true;
 					fstream fs(savepath);
-
 					if (!fs)
 						return;
 
+					mp->OnMap = new GMap;
+					mp->startgame = true;
 					int temp=0;
 					
 					fs >> temp;
@@ -88,6 +87,7 @@ private:
 			system("cls");
 			break;
 		case GMType::Rend:
+			system("cls");
 			Render();
 			break;
 		case GMType::Change_View:
@@ -156,10 +156,9 @@ public:
 		while (true)
 		{
 			GameMapInitialize();
-
 			//抓取到可能有效的输入才进行处理
 			GInput->Update();
-			if (GInput->Info.intype!=GIType::None)
+			if (GInput->Info.intype != GIType::None)
 				DealInput();
 			GB_Msg ToDeal = GMsg->PopMsg();//获取队首消息
 			if (ToDeal.type == GMType::Exit_Process)
@@ -167,7 +166,6 @@ public:
 			else
 				DealMsg(ToDeal);//处理所有类型的消息
 
-			Sleep(1000 / FPS);
 		}
 	}
 };

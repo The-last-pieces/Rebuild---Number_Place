@@ -40,14 +40,7 @@ GB_Msg CreateMsg(GMType mtype)
 	return rmsg;
 }
 
-int getmillis(SYSTEMTIME tstp)
-{
-	int rtime = tstp.wMilliseconds;
-	rtime += 60 * tstp.wSecond;
-	rtime += 60 * 60 * tstp.wHour;
-	rtime += 24 * 60 * 60 * tstp.wDay;
-	return rtime;
-}
+queue<GO_Msg> GTalker::showqueue;
 
 //三大全局对象的实例化
 GTalker* GTalker::Instance = new GTalker;
@@ -58,39 +51,37 @@ void GTalker::backgroud()
 {
 	const string backstring = "@%&";
 	//绘制动态背景
-
 	int offpos = 0;
 
 	while (true)
 	{
 		++offpos;
-		Sleep(FPS * 4);
+		Sleep(1000 / FPS );
 
-		moveto({ 0,0 });
+		GO_Msg msgtemp;
+		string tempstr;
+
 		for (int i = 0; i < horizontal(); )
 		{
 			int temp = (i + offpos) % backstring.size();
-			cout << backstring[temp];
-
+			tempstr += backstring[temp];
 			i += 1;
 		}
+		msgtemp.AllStrings.push_back({ tempstr ,{0,0} });
+		msgtemp.AllStrings.push_back({ tempstr ,{0,vertical() - 1} });
+
 		for (int i = 1; i < vertical(); ++i)
 		{
-			moveto({ 0,i });
-			cout << backstring[(i + offpos) % backstring.size()];
-			moveto({ horizontal() - 1,i });
-			cout << backstring[(i + offpos) % backstring.size()];
-		}
-		moveto({ 0,vertical() - 1 });
-		for (int i = 0; i < horizontal(); )
-		{
-			int temp = (i + offpos) % backstring.size();
-			cout << backstring[temp];
-			i += 1;
-		}
-		moveto({ 0,0 });
-	}
+			tempstr.clear();
+			tempstr+=(backstring[(i + offpos) % backstring.size()]);
+			msgtemp.AllStrings.push_back({ tempstr,{0,i} });
 
+			tempstr.clear();
+			tempstr+=(backstring[(i + offpos) % backstring.size()]);
+			msgtemp.AllStrings.push_back({ tempstr,{horizontal() - 1,i } });
+		}
+		showqueue.push(msgtemp);
+	}
 }
 
 void GTalker::DealInfo(GO_Msg& info)
@@ -111,31 +102,33 @@ void GTalker::DealInfo(GO_Msg& info)
 	{
 		for (int index = 0; index <int(node.second.size()); ++index)
 		{
+			int factlen = int(node.second[index].StrView.size()) - node.second[index].offlen;
 			switch (node.first)
 			{
 			case GOType::Center:
 				node.second[index].pos =
-				{(horizontal() - int(node.second[index].StrView.size())) / 2, Up_Down + index + index * between_point };
+				{(horizontal() - factlen) / 2, Up_Down + index + index * between_point };
 				break;
 			case GOType::Explanation:
 				node.second[index].pos =
-				{ (horizontal() - int(node.second[index].StrView.size())) / 2 , vertical() - Up_Down + index + 1 };
+				{ (horizontal() - factlen) / 2 , vertical() - Up_Down + index + 1 };
 				break;
 			case GOType::SelfDef:
 				break;
 			case GOType::GameTable:
 				node.second[index].pos =
-				{ (horizontal() - int(node.second[index].StrView.size())) / 2, (vertical() - int(node.second.size())) / 2 + index };
+				{ (horizontal() - factlen) / 2, (vertical() - int(node.second.size())) / 2 + index };
 				break;
 			case GOType::NoBetween_Center:
 				break;
 			case GOType::GameHint:
 				node.second[index].pos =
-				{ (horizontal() - int(node.second[index].StrView.size())) / 2 , (vertical() + 13) / 2 + 3 };
+				{ (horizontal() - factlen) / 2 , (vertical() + 13) / 2 + 3 };
 				break;
 			default:
 				break;
 			}
+
 			info.AllStrings.push_back(node.second[index]);
 		}
 	}
@@ -143,16 +136,10 @@ void GTalker::DealInfo(GO_Msg& info)
 
 void GTalker::Render(GO_Msg info)
 {
-	//backgroud();
-
 	//对坐标预处理
 	DealInfo(info);
 
-	for (const auto& node : info.AllStrings)
-	{
-		moveto(node.pos);
-		cout << node.StrView;
-	}
+	showqueue.push(info);
 }
 
 int GTalker::horizontal()
@@ -168,6 +155,7 @@ int GTalker::vertical()
 
 bool GListener::Update(void)
 {
+	Sleep(1500 / FPS);
 	//更新输入数据
 	updateWindowInfo();
 	bool temp = updateKeyBoardInfo() || updateMouseInfo();
@@ -178,9 +166,7 @@ bool GListener::Update(void)
 
 void GMessageQueue::AddMsg(GB_Msg info)
 {
-	if (info.type == GMType::Rend)
-		AddMsg(GB_Msg{ GMType::Clear });
-	if (MQueue.empty() || MQueue.front().type != info.type)
+	if (MQueue.empty() || MQueue.back().type != info.type)
 		MQueue.push(info);
 }
 GB_Msg GMessageQueue::PopMsg()
@@ -189,6 +175,11 @@ GB_Msg GMessageQueue::PopMsg()
 		return { GMType::NOP };
 	GB_Msg temp = MQueue.front();
 	MQueue.pop();
+
+#ifdef debug
+	DebugLog(temp);
+#endif // debug
+
 	return temp;
 }
 

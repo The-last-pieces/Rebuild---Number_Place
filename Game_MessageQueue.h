@@ -20,6 +20,33 @@ private:
 public:
 	//消息队列
 	queue<GB_Msg> MQueue;
+	template <typename T>
+	static void DebugLog(T what)
+	{
+		fstream fs(R"(.\data\log.txt)", std::ios_base::app);
+		if (fs)
+		{
+			fs << what << endl;
+		}
+		fs.close();
+	}
+	static void DebugLog(GB_Msg what)
+	{
+		const vector<string>sts = {
+				"Exit_Process,//退出进程",
+				"Clear,//清空画面",
+				"Rend,//添加画面(不覆盖)",
+				"Change_View,//切换OnView",
+				"Change_Hard,//切换Hard",
+				"Change_PMode,//切换PMode",
+				"GetAnswer,//获取答案",
+				"Save,//存档",
+				"Load,//读档",
+				"Sleep,//休眠",
+				"NOP//空操作"
+		};
+		DebugLog(sts[int(what.type)]);
+	}
 public:
 	static GMessageQueue* getInstance()
 	{
