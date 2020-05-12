@@ -211,7 +211,7 @@ public:
 			GMsg->AddMsg(CreateMsg(5));
 			GMsg->AddMsg(CreateMsg(GResType::Text_Win));
 			GMsg->AddMsg(CreateMsg(GMType::Rend));
-			GMsg->AddMsg(CreateMsg(5));
+			GMsg->AddMsg(CreateMsg(2));
 			GMsg->AddMsg(CreateMsg(GMType::Exit_Process));
 		}
 		else

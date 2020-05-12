@@ -20,6 +20,10 @@ private:
 public:
 	//消息队列
 	queue<GB_Msg> MQueue;
+
+	//调试所用的日志函数
+#ifdef debug
+
 	template <typename T>
 	static void DebugLog(T what)
 	{
@@ -47,6 +51,8 @@ public:
 		};
 		DebugLog(sts[int(what.type)]);
 	}
+#endif // debug
+
 public:
 	static GMessageQueue* getInstance()
 	{

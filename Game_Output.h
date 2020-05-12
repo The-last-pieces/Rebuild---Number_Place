@@ -9,28 +9,12 @@ private:
 	static GTalker* Instance;
 private:
 	const int between_point = 4;//游标间距
-	
+
 	thread keepback;
 	thread keeppaint;
+
 	bool OnPaint = false;
 
-private:
-	/*vector<string> getbackstring()
-	{
-		string temp;
-		vector<string>result;
-		for (int index = 0; index<int(backstring.size()); ++index)
-		{
-			temp.push_back(backstring[index]);
-			if (backstring[index] < 0)
-			{
-				temp.push_back(backstring[++index]);
-			}
-			result.push_back(temp);
-			temp.clear();
-		}
-		return result;
-	}*/
 private:
 	static int vertical();
 	static int horizontal();
@@ -51,18 +35,24 @@ private:
 	}
 
 	static queue<GO_Msg> showqueue;
+	static void ClearQueue(queue<GO_Msg>& tclear)
+	{
+		if (tclear.empty())
+			return;
+		auto temp = tclear.front().AllStrings;
+		for (size_t index = 0; index < temp.size(); ++index)
+		{
+			moveto(temp[index].pos);
+			cout << temp[index].StrView;
+		}
+		tclear.pop();
+	}
 	static void Painter()
 	{
 		while (true)
 		{
-			if (showqueue.empty())
-				continue;
-			for (const auto& node : showqueue.front().AllStrings)
-			{
-				moveto(node.pos);
-				cout << node.StrView;
-			}
-			showqueue.pop();
+			ClearQueue(showqueue);
+			ClearQueue(mapqueue);
 		}
 	}
 private:
@@ -71,6 +61,7 @@ private:
 	{
 		//a.empty();
 		system("mode con lines=30 cols=90");
+		SetConsoleTitle(L"Sudoku");
 		keepback.detach();
 		keeppaint.detach();
 	}
@@ -80,6 +71,8 @@ private:
 	}
 	GTalker(const GTalker&) = delete;
 public:
+	static queue<GO_Msg> mapqueue;
+
 	static GTalker* getInstance()
 	{
 		//保持每个GInput同步

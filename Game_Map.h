@@ -1,5 +1,5 @@
 #pragma once
-#include "Game_Global.h"
+#include "Game_Output.h"
 //储存一个数独盘 
 //有自动求所有解, 自动生成, 自动提示功能
 
@@ -19,7 +19,7 @@ public:
 		array<array<int, Map_Size>, Map_Size> canans = { 0 };
 		int anscounts = 0;
 	private:
-		GSetType Gmode = GSetType::Choose_Classic;
+		GSetType Gmode = GSetType::Choose_Standard;
 
 		array<array<bool, Map_Size>, Map_Size> blocks = { 0 };
 		array<array<bool, Map_Size>, Map_Size> cols = { 0 };
@@ -45,16 +45,20 @@ public:
 							if (
 								!cols[y][num] &&
 								!rows[x][num] &&
-								!blocks[k][num] &&
-								(
-									Gmode != GSetType::Choose_Classic ||
-									(!rlines[x + y][num] && !llines[Map_Size - 1 - x + y][num])
-									)
+								!blocks[k][num]
 								)
 							{
+								/*if (Gmode == GSetType::Choose_Classic)
+								{
+									if (rlines[x + y][num] || llines[Map_Size - 1 - x + y][num])
+									{
+										continue;
+									}
+								}*/
+
 								// l对于的数字l+1没有在行列块中出现
-								//rlines[x + y][num] =
-									//llines[Map_Size - 1 - x + y][num] =
+								rlines[x + y][num] =
+									llines[Map_Size - 1 - x + y][num] =
 									rows[x][num] =
 									cols[y][num] =
 									blocks[k][num] = true;
@@ -64,8 +68,8 @@ public:
 								{
 									anscounts++;
 								}
-								//rlines[x + y][num] =
-									//llines[Map_Size - 1 - x + y][num] =
+								rlines[x + y][num] =
+									llines[Map_Size - 1 - x + y][num] =
 									rows[x][num] =
 									cols[y][num] =
 									blocks[k][num] = false;// 递进失败则回溯
@@ -102,13 +106,17 @@ public:
 				{
 					val = -rdnum[i], num = abs(val) - 1, k = x / 3 * 3 + y / 3;
 					if (!(
-						(GSetType::Choose_Classic != Gmode ||
-						(rlines[x + y][num] ||
-						llines[Map_Size - 1 - x + y][num])) ||
 						rows[x][num] ||
 						cols[y][num] ||
 						blocks[k][num]))
 					{
+						/*if (GSetType::Choose_Classic == Gmode)
+						{
+							if (rlines[x + y][num] || llines[Map_Size - 1 - x + y][num])
+							{
+								continue;
+							}
+						}*/
 						rlines[x + y][num] =
 							llines[Map_Size - 1 - x + y][num] =
 							rows[x][num] =
@@ -152,7 +160,7 @@ public:
 							return false;
 						blocks[k][val] = true;
 
-						if (Gmode == GSetType::Choose_Classic)
+						/*if (Gmode == GSetType::Choose_Classic)
 						{
 							k = x + y;
 
@@ -165,7 +173,7 @@ public:
 							if (rlines[k][val])
 								return false;
 							rlines[k][val] = true;
-						}
+						}*/
 					}
 				}
 			}
@@ -206,26 +214,39 @@ public:
 
 		bool getamap(array<array<int, Map_Size>, Map_Size>& mp, int base)
 		{
-			srand(unsigned int(time(NULL)));
 			while (1)
 			{
-				mp.fill({ 0 });
-				predeal();
-				for (int i = 0; i < base; )
+				srand(unsigned int(time(NULL)));
+				for (int mt = 0; mt < 1000; ++mt)
 				{
-					GPoint pos = { rand() % 9,rand() % 9 };
-
-					if (tryset(mp[pos.Horizontal][pos.Vertical], pos.Horizontal, pos.Vertical))
+					mp.fill({ 0 });
+					predeal();
+					GO_Msg msg;
+					for (int i = 0; i < base; )
 					{
-						++i;
-					}
-				}
+						GPoint pos = { rand() % 9,rand() % 9 };
 
-				auto temp = mp;
-				if (getanswer(temp))
-				{
-					canans = temp;
-					return true;
+						if (tryset(mp[pos.Horizontal][pos.Vertical], pos.Horizontal, pos.Vertical))
+						{
+							++i;
+						}
+					}
+
+					if (mt % 10 == 0)
+					{
+						stringstream tempstr;
+						tempstr << "正在尝试生成数据:" << string(mt / 50, '#') << string(((1000 - mt) / 50), ' ') << "<>"[(mt / 50) % 2] << "    初始数:" << base << "个   ";
+						msg.AllStrings.push_back({ tempstr.str() ,{1,1},GOType::SelfDef });
+						msg.AllStrings.push_back({ "//初始数小于30时生成速度会明显降低,请耐心等待" ,{2,2},GOType::SelfDef });
+						GOutput->mapqueue.push(msg);
+					}
+
+					auto temp = mp;
+					if (getanswer(temp))
+					{
+						canans = temp;
+						return true;
+					}
 				}
 			}
 		}
@@ -240,7 +261,7 @@ private:
 public:
 	GMap() :worker(GSetType::Choose_Standard), hard(GSetType::Choose_Normal), mode(GSetType::Choose_Standard)
 	{
-
+		
 	}
 	GMap(GSetType _hard, GSetType _mode = GSetType::Choose_Standard) :worker(_mode), hard(GSetType::Choose_Normal), mode(_mode)
 	{

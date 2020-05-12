@@ -6,7 +6,7 @@ class GControl
 {
 private:
 	GSetType Hard = GSetType::Choose_Easy;//游戏难度
-	GSetType PMode = GSetType::Choose_Classic;//游戏类型
+	GSetType PMode = GSetType::Choose_Standard;//游戏类型
 	GView* OnView = nullptr;
 	GResType whichres = GResType::Menu_Main;
 	map<GResType, GView*>GResources;
@@ -22,19 +22,19 @@ private:
 			{
 				if (mp->OnMap)
 				{
-					fstream fs;
-					fs.open(savepath);
+					std::ofstream fs(savepath);
 
 					if (!fs)
 						return;
 
-					fs << (int)mp->OnMap->hard << ' ' << (int)mp->OnMap->mode << ' ';
+					fs << (int)mp->OnMap->hard << ' ' << (int)mp->OnMap->mode << '\n';
 					for (int i = 0; i < 9; ++i)
 					{
 						for (int j = 0; j < 9; ++j)
 						{
 							fs << mp->OnMap->map_info[i][j] << ' ';
 						}
+						fs << endl;
 					}
 
 					fs.close();
@@ -42,7 +42,7 @@ private:
 			}
 		}
 	}
-	void LoadProcess()
+	bool LoadProcess()
 	{
 		if (GResources[GResType::Play_OnGame])
 		{
@@ -53,7 +53,7 @@ private:
 				{
 					fstream fs(savepath);
 					if (!fs)
-						return;
+						return false;
 
 					mp->OnMap = new GMap;
 					mp->startgame = true;
@@ -68,14 +68,16 @@ private:
 					{
 						for (int j = 0; j < 9; ++j)
 						{
-							fs >> mp->OnMap->map_info[j][i];
+							fs >> mp->OnMap->map_info[i][j];
 						}
 					}
 
 					fs.close();
+					return true;
 				}
 			}
 		}
+		return false;
 	}
 private:
 	void DealMsg(GB_Msg ToDeal)
@@ -83,11 +85,7 @@ private:
 		//处理消息
 		switch (ToDeal.type)
 		{
-		case GMType::Clear:
-			system("cls");
-			break;
 		case GMType::Rend:
-			system("cls");
 			Render();
 			break;
 		case GMType::Change_View:
@@ -111,7 +109,8 @@ private:
 			SaveProcess();
 			break;
 		case GMType::Load:
-			LoadProcess();
+			if (LoadProcess())
+				GMsg->AddMsg(CreateMsg(GResType::Play_OnGame));
 			break;
 		case GMType::Sleep:
 			Sleep(ToDeal.ex.sleeptime);
@@ -131,6 +130,7 @@ private:
 	{
 		if (!OnView)
 			return;
+		system("cls");
 		GOutput->Render(OnView->Stringify());
 	}
 	void GameMapInitialize()
@@ -156,6 +156,7 @@ public:
 		while (true)
 		{
 			GameMapInitialize();
+
 			//抓取到可能有效的输入才进行处理
 			GInput->Update();
 			if (GInput->Info.intype != GIType::None)

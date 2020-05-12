@@ -26,12 +26,20 @@ GO_Msg GMap::Stringify()
 				else
 				{
 					auto val = GetVal({ x - x / 4 - 1,y - y / 4 - 1 });
-					if (val >= 0)
-						temp.push_back(NumtoChar(val));
-					else
+					if (val > 0)
+					{
+						temp += string("\033[43;34m") + NumtoChar(val) + "\033[0m";
+						++cs;
+					}
+					else if (val < 0)
 					{
 						temp += string("\033[43;31m") + NumtoChar(val) + "\033[0m";
+						//»Æµ×ºì×Ö
 						++cs;
+					}
+					else
+					{
+						temp.push_back(NumtoChar(val));
 					}
 				}
 			}

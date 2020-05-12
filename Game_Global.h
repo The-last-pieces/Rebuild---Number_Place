@@ -8,8 +8,8 @@
 #include <queue>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <thread>
-#include <atomic>
 #include <time.h>
 #include <conio.h>
 #include <io.h>
@@ -24,6 +24,7 @@ using std::map;
 using std::queue;
 using std::thread;
 using std::fstream;
+using std::stringstream;
 
 using std::swap;
 using std::max;
@@ -33,11 +34,11 @@ using std::cout;
 using std::cin;
 
 //游戏设置的枚举
+
 enum class GSetType//储存游戏设置
 {
 	Choose_Standard,//标准模式
-	Choose_Classic,//经典模式
-
+	//Choose_Classic,//经典模式 ##已弃用
 	Choose_Master = 25,//简单难度
 	Choose_Normal = 30,//一般难度
 	Choose_Easy = 35,//困难难度
@@ -104,6 +105,7 @@ enum class GResType
 	Menu_Setting,//游戏设置菜单
 	Menu_Quit,//处理退出行为
 
+	Text_Welcome,//欢迎信息
 	Text_Help,//游戏帮助
 	Text_Win//胜利提示信息
 };
@@ -162,7 +164,7 @@ typedef struct Output_Info
 {
 	typedef struct Str_Info
 	{
-		string StrView;//图形
+		string StrView ;//内容
 		GPoint pos;//位置
 		GOType type = GOType::Center;//输出格式
 		int offlen = 0;//偏移量
@@ -170,7 +172,6 @@ typedef struct Output_Info
 
 	vector<Str_Info>AllStrings;
 }GO_Msg;
-
 
 
 

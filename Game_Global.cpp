@@ -41,6 +41,8 @@ GB_Msg CreateMsg(GMType mtype)
 }
 
 queue<GO_Msg> GTalker::showqueue;
+queue<GO_Msg> GTalker::mapqueue;
+//mutex GTalker::safelock;
 
 //三大全局对象的实例化
 GTalker* GTalker::Instance = new GTalker;
