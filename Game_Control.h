@@ -110,7 +110,10 @@ private:
 			break;
 		case GMType::Load:
 			if (LoadProcess())
+			{
 				GMsg->AddMsg(CreateMsg(GResType::Play_OnGame));
+				GMsg->AddMsg(CreateMsg(GMType::Rend));
+			}
 			break;
 		case GMType::Sleep:
 			Sleep(ToDeal.ex.sleeptime);

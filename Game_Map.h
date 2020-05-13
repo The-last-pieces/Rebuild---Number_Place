@@ -1,6 +1,6 @@
 #pragma once
 #include "Game_Output.h"
-//储存一个数独盘 
+//储存一个数独盘
 //有自动求所有解, 自动生成, 自动提示功能
 
 #define Map_Size 9
@@ -16,16 +16,16 @@ public:
 	class GMapWorker
 	{
 	public:
-		array<array<int, Map_Size>, Map_Size> canans = { 0 };
+		array<array<int, Map_Size>, Map_Size> canans;
 		int anscounts = 0;
 	private:
 		GSetType Gmode = GSetType::Choose_Standard;
 
-		array<array<bool, Map_Size>, Map_Size> blocks = { 0 };
-		array<array<bool, Map_Size>, Map_Size> cols = { 0 };
-		array<array<bool, Map_Size>, Map_Size> rows = { 0 };
-		array<array<bool, 2 * Map_Size - 1>, 2 * Map_Size - 1> llines = { 0 };//左上右下
-		array<array<bool, 2 * Map_Size - 1>, 2 * Map_Size - 1> rlines = { 0 };//右上左下
+		array<array<bool, Map_Size>, Map_Size> blocks;
+		array<array<bool, Map_Size>, Map_Size> cols;
+		array<array<bool, Map_Size>, Map_Size> rows;
+		array<array<bool, 2 * Map_Size - 1>, 2 * Map_Size - 1> llines;//左上右下
+		array<array<bool, 2 * Map_Size - 1>, 2 * Map_Size - 1> rlines;//右上左下
 
 	private:
 		bool dealmap(array<array<int, Map_Size>, Map_Size>& minfo)
@@ -132,9 +132,9 @@ public:
 			return false;
 		}
 	public:
-		GMapWorker(GSetType _mode):Gmode(_mode)
+		GMapWorker(GSetType _mode) :Gmode(_mode)
 		{
-
+            predeal();
 		}
 		bool canbe(const array<array<int, Map_Size>, Map_Size>& minfo)
 		{
@@ -214,10 +214,13 @@ public:
 
 		bool getamap(array<array<int, Map_Size>, Map_Size>& mp, int base)
 		{
+			int mload = 1000;
+			if (base < 30)
+				mload = 100;
 			while (1)
 			{
-				srand(unsigned int(time(NULL)));
-				for (int mt = 0; mt < 1000; ++mt)
+				srand((unsigned int)(time(NULL)));
+				for (int mt = 0; mt < mload; ++mt)
 				{
 					mp.fill({ 0 });
 					predeal();
@@ -232,14 +235,13 @@ public:
 						}
 					}
 
-					if (mt % 10 == 0)
-					{
-						stringstream tempstr;
-						tempstr << "正在尝试生成数据:" << string(mt / 50, '#') << string(((1000 - mt) / 50), ' ') << "<>"[(mt / 50) % 2] << "    初始数:" << base << "个   ";
-						msg.AllStrings.push_back({ tempstr.str() ,{1,1},GOType::SelfDef });
-						msg.AllStrings.push_back({ "//初始数小于30时生成速度会明显降低,请耐心等待" ,{2,2},GOType::SelfDef });
-						GOutput->mapqueue.push(msg);
-					}
+					stringstream tempstr;
+					tempstr << "正在尝试生成数据:" << string(mt / (mload / 20), '#') << string(((mload - mt) / (mload / 20)), ' ') << "<>"[(mt / 50) % 2] << "    初始数:" << base << "个   ";
+					msg.AllStrings.push_back({ tempstr.str() ,{1,1},GOType::SelfDef });
+					msg.AllStrings.push_back({ "//初始数小于30时生成速度会明显降低,请耐心等待" ,{2,2},GOType::SelfDef });
+
+					GOutput->Render(msg);
+
 
 					auto temp = mp;
 					if (getanswer(temp))
@@ -261,7 +263,7 @@ private:
 public:
 	GMap() :worker(GSetType::Choose_Standard), hard(GSetType::Choose_Normal), mode(GSetType::Choose_Standard)
 	{
-		
+
 	}
 	GMap(GSetType _hard, GSetType _mode = GSetType::Choose_Standard) :worker(_mode), hard(GSetType::Choose_Normal), mode(_mode)
 	{
@@ -281,7 +283,27 @@ private:
 	{
 		return char(num ? (abs(num) + '0') : BlockChar);
 	}
+
+	stack<pair<GPoint, int>> history;
+
+	void Gcanans()
+	{
+		auto temp = map_info;
+		if (worker.canans[0][0] != 0)
+			return;
+		worker.getanswer(temp);
+	}
 public:
+	bool Back()
+	{
+		if (history.empty())
+			return false;
+		auto temp = history.top();
+		history.pop();
+		map_info[temp.first.Vertical][temp.first.Horizontal] = temp.second;
+		return true;
+	}
+
 	GO_Msg Stringify();//序列化
 	int GetVal(GPoint pos)
 	{
@@ -301,6 +323,10 @@ public:
 		{
 			if (map_info[pos.Vertical][pos.Horizontal] < 0)//规定小于0的为最初的数字
 				return false;
+			if (map_info[pos.Vertical][pos.Horizontal] == num)
+				return false;
+
+			history.push({ pos,map_info[pos.Vertical][pos.Horizontal] });
 			map_info[pos.Vertical][pos.Horizontal] = num;
 			return true;
 		}
@@ -312,6 +338,7 @@ public:
 	}
 	bool IsWin()
 	{
+		Gcanans();
 		return map_info == worker.canans;
 	}
 };

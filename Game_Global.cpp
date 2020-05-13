@@ -6,7 +6,7 @@ GB_Msg CreateMsg(double _sleeptime)
 	//以秒位单位
 	GB_Msg rmsg;
 	rmsg.type = GMType::Sleep;
-	rmsg.ex.sleeptime = max(0, DWORD(_sleeptime * 1000));
+	rmsg.ex.sleeptime = max(DWORD(0), DWORD(_sleeptime * 1000));
 	return rmsg;
 }
 GB_Msg CreateMsg(GResType ptr)
@@ -41,8 +41,7 @@ GB_Msg CreateMsg(GMType mtype)
 }
 
 queue<GO_Msg> GTalker::showqueue;
-queue<GO_Msg> GTalker::mapqueue;
-//mutex GTalker::safelock;
+mutex GTalker::safelock;
 
 //三大全局对象的实例化
 GTalker* GTalker::Instance = new GTalker;
@@ -81,7 +80,10 @@ void GTalker::backgroud()
 			tempstr+=(backstring[(i + offpos) % backstring.size()]);
 			msgtemp.AllStrings.push_back({ tempstr,{horizontal() - 1,i } });
 		}
+
+		safelock.lock();
 		showqueue.push(msgtemp);
+		safelock.unlock();
 	}
 }
 
@@ -140,7 +142,9 @@ void GTalker::Render(GO_Msg info)
 	//对坐标预处理
 	DealInfo(info);
 
+	safelock.lock();
 	showqueue.push(info);
+	safelock.unlock();
 }
 
 int GTalker::horizontal()
@@ -156,7 +160,6 @@ int GTalker::vertical()
 
 bool GListener::Update(void)
 {
-	Sleep(1500 / FPS);
 	//更新输入数据
 	updateWindowInfo();
 	bool temp = updateKeyBoardInfo() || updateMouseInfo();

@@ -20,6 +20,13 @@ private:
 		mode &= ~ENABLE_INSERT_MODE;      //移除插入模式
 		mode &= ~ENABLE_MOUSE_INPUT;
 		SetConsoleMode(hStdin, mode);
+
+		SetWindowLongPtrA(
+            GetConsoleWindow(),
+            GWL_STYLE,
+            GetWindowLongPtrA(GetConsoleWindow(),GWL_STYLE)
+            & ~WS_SIZEBOX & ~WS_MAXIMIZEBOX & ~WS_MINIMIZEBOX
+        );
 	}
 	~GListener()
 	{
@@ -64,6 +71,8 @@ private:
 			Info.intype = GIType::Left_Lable;
 		if (Info.onkey == 'd' || Info.onkey == 'D' || Info.onkey == VK_RIGHT)
 			Info.intype = GIType::Right_Lable;
+		if (Info.onkey == VK_SPACE)
+			Info.intype = GIType::Regret;
 
 	}
 	bool updateKeyBoardInfo()
@@ -81,7 +90,7 @@ private:
 		Info.mouse_hit = false;
 		POINT curpos;
 		GetCursorPos(&curpos);
-		
+
 		//更新真实坐标
 		Info.mouse_pos = { (curpos.x - Info.basepoint.Vertical) / 8,(curpos.y - Info.basepoint.Horizontal) / 16 };
 

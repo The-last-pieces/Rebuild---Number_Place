@@ -12,9 +12,6 @@ private:
 
 	thread keepback;
 	thread keeppaint;
-
-	bool OnPaint = false;
-
 private:
 	static int vertical();
 	static int horizontal();
@@ -27,14 +24,8 @@ private:
 	}
 	void DealInfo(GO_Msg& info);//格式化处理
 
-	template<typename T>
-	static void outstring(const T& what)
-	{
-		cout << what;
-		OnPaint = false;
-	}
-
 	static queue<GO_Msg> showqueue;
+	static mutex safelock;
 	static void ClearQueue(queue<GO_Msg>& tclear)
 	{
 		if (tclear.empty())
@@ -51,17 +42,18 @@ private:
 	{
 		while (true)
 		{
+			safelock.lock();
 			ClearQueue(showqueue);
-			ClearQueue(mapqueue);
+			safelock.unlock();
 		}
 	}
+	static void backgroud();
 private:
 	//防止意外的修改对象
 	GTalker() :keeppaint(Painter), keepback(backgroud)
 	{
-		//a.empty();
 		system("mode con lines=30 cols=90");
-		SetConsoleTitle(L"Sudoku");
+		SetConsoleTitle(TEXT("Sudoku"));
 		keepback.detach();
 		keeppaint.detach();
 	}
@@ -71,8 +63,6 @@ private:
 	}
 	GTalker(const GTalker&) = delete;
 public:
-	static queue<GO_Msg> mapqueue;
-
 	static GTalker* getInstance()
 	{
 		//保持每个GInput同步
@@ -82,7 +72,6 @@ public:
 	}
 	//根据string串渲染图像
 	void Render(GO_Msg info);//渲染器
-	static void backgroud();
 };
 
 #define GOutput GTalker::getInstance()

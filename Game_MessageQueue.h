@@ -17,10 +17,11 @@ private:
 		//释放线程资源
 	}
 	GMessageQueue(const GMessageQueue&) = delete;
-public:
+
+private:
 	//消息队列
 	queue<GB_Msg> MQueue;
-
+public:
 	//调试所用的日志函数
 #ifdef debug
 

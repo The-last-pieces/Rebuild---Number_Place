@@ -6,10 +6,12 @@
 #include <array>
 #include <map>
 #include <queue>
+#include <stack>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <thread>
+#include <mutex>
 #include <time.h>
 #include <conio.h>
 #include <io.h>
@@ -18,11 +20,13 @@
 
 using std::vector;
 using std::string;
+using std::stack;
 using std::array;
 using std::pair;
 using std::map;
 using std::queue;
 using std::thread;
+using std::mutex;
 using std::fstream;
 using std::stringstream;
 
@@ -32,6 +36,8 @@ using std::endl;
 
 using std::cout;
 using std::cin;
+
+extern "C" WINBASEAPI HWND WINAPI GetConsoleWindow();
 
 //游戏设置的枚举
 
@@ -83,7 +89,8 @@ enum class GIType
 	Down_Page,
 	Left_Lable,
 	Right_Lable,
-	Mouse_Left
+	Mouse_Left,
+	Regret
 };
 //视图资源枚举
 enum class GResType

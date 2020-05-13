@@ -202,17 +202,22 @@ public:
 		case GIType::Confirm:
 			OnMap->WorkOut();
 			break;
+		case GIType::Regret:
+			OnMap->Back();
+			break;
 		default:
 			return false;
 		}
 		if (OnMap->IsWin())
 		{
-			GMsg->AddMsg(CreateMsg(GMType::Rend));
-			GMsg->AddMsg(CreateMsg(5));
-			GMsg->AddMsg(CreateMsg(GResType::Text_Win));
-			GMsg->AddMsg(CreateMsg(GMType::Rend));
-			GMsg->AddMsg(CreateMsg(2));
+			GOutput->Render(this->Stringify());
+
+			GO_Msg msg;
+			msg.AllStrings.push_back({ "你获得了游戏胜利,按任意键退出程序",{GInput->Info.screensize.Horizontal / 2 - 17,3},GOType::SelfDef });
+			GOutput->Render(msg);
+
 			GMsg->AddMsg(CreateMsg(GMType::Exit_Process));
+			_getch();
 		}
 		else
 			GMsg->AddMsg(CreateMsg(GMType::Rend));
