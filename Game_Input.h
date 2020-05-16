@@ -18,7 +18,7 @@ private:
 		GetConsoleMode(hStdin, &mode);
 		mode &= ~ENABLE_QUICK_EDIT_MODE;  //移除快速编辑模式
 		mode &= ~ENABLE_INSERT_MODE;      //移除插入模式
-		mode &= ~ENABLE_MOUSE_INPUT;
+		mode &= ~ENABLE_MOUSE_INPUT;	  //过滤其他鼠标输入
 		SetConsoleMode(hStdin, mode);
 
 		SetWindowLongPtrA(
@@ -26,7 +26,7 @@ private:
             GWL_STYLE,
             GetWindowLongPtrA(GetConsoleWindow(),GWL_STYLE)
             & ~WS_SIZEBOX & ~WS_MAXIMIZEBOX & ~WS_MINIMIZEBOX
-        );
+        );//锁定窗口大小
 	}
 	~GListener()
 	{
@@ -87,18 +87,31 @@ private:
 	}
 	bool updateMouseInfo()
 	{
-		Info.mouse_hit = false;
+		//记录上次按压是否结束
+		static bool hasend = true;
+
 		POINT curpos;
 		GetCursorPos(&curpos);
 
 		//更新真实坐标
 		Info.mouse_pos = { (curpos.x - Info.basepoint.Vertical) / 8,(curpos.y - Info.basepoint.Horizontal) / 16 };
 
+		//处于按压状态
 		if (GetAsyncKeyState(VK_LBUTTON) && 0x8000)
 		{
-			Info.mouse_hit = true;
-			return true;
+			//上次按压已经结束
+			if (hasend)
+			{
+				hasend = false;//防止重复的按压信息
+				Info.mouse_hit = true;
+				return true;
+			}
 		}
+		else
+		{
+			hasend = true;
+		}
+		Info.mouse_hit = false;
 		return false;
 	}
 	void updateWindowInfo()
@@ -106,30 +119,16 @@ private:
 		Info.winhandle = WinHandle();
 
 		//更新基坐标
-		RECT rect;
-		GetWindowRect(GetConsoleWindow(), &rect);
-		Info.basepoint = { rect.left + 7, rect.top + 31 };
 
-		//更新缓冲区大小
-		CONSOLE_SCREEN_BUFFER_INFO Pif;
-		GetConsoleScreenBufferInfo(Info.winhandle, &Pif);
-		Pif.dwSize.X = Pif.srWindow.Right + 1;
-		Pif.dwSize.Y = Pif.srWindow.Bottom + 1;
-
-		if (Info.screensize.Horizontal != Pif.dwSize.X || Info.screensize.Vertical != Pif.dwSize.Y)
-		{
-			Info.screensize.Horizontal = Pif.dwSize.X;
-			Info.screensize.Vertical = Pif.dwSize.Y;
-
-			GMsg->AddMsg({ GMType::Clear });
-		}
-		SetConsoleScreenBufferSize(Info.winhandle, Pif.dwSize);
-
-		CONSOLE_CURSOR_INFO cursorinfo;
-		GetConsoleCursorInfo(Info.winhandle, &cursorinfo);//获取控制台光标信息
-		cursorinfo.bVisible = false; //隐藏控制台光标
-		SetConsoleCursorInfo(Info.winhandle, &cursorinfo);//设置控制台光标状态
-
+		/* --------
+			旧版算法,兼容性差
+			RECT rect;
+			GetWindowRect(GetConsoleWindow(), &rect);
+			Info.basepoint = { rect.left + 7, rect.top + 31 };//手动测量
+		*/
+		POINT rect = { 0,0 };
+		ClientToScreen(GetConsoleWindow(), &rect);
+		Info.basepoint = { rect.x,rect.y };
 	}
 };
 

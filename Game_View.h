@@ -153,7 +153,7 @@ private:
 		rpt.Vertical = pos.Vertical - lr;
 		rpt.Horizontal = pos.Horizontal - ud;
 
-		if (!(rpt.Horizontal % 4 && rpt.Vertical))
+		if (!(rpt.Horizontal % 4 && rpt.Vertical % 4))
 			return { -1,-1 };
 
 		rpt.Vertical -= rpt.Vertical / 4 + 1;

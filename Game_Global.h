@@ -67,30 +67,25 @@ enum class GMType
 //输出格式枚举
 enum class GOType
 {
-	Center,
-	NoBetween_Center,
-	Explanation,
-	//Left_top,
-	//Left_bottom,
-	//Right_top,
-	//Right_bottom,
-	SelfDef,
-	GameTable,
-	GameHint
+	Center,		//居中输出目录
+	Explanation,//目录选项的解释
+	SelfDef,	//自定义位置
+	GameTable,	//输出游戏棋盘
+	GameHint	//输出选择的数字
 };
 //输入行为枚举
 enum class GIType
 {
-	None,
-	Number,
-	Confirm,
-	Back,
-	Up_Page,
-	Down_Page,
-	Left_Lable,
-	Right_Lable,
-	Mouse_Left,
-	Regret
+	None,		//无
+	Number,		//数字0~9
+	Confirm,	//回车
+	Back,		//ESC或者Q
+	Up_Page,	//W 
+	Down_Page,	//S
+	Left_Lable,	//A
+	Right_Lable,//D
+	Mouse_Left,	//鼠标左键
+	Regret		//空格
 };
 //视图资源枚举
 enum class GResType
@@ -158,26 +153,26 @@ typedef struct Behavior_Info
 //类与用户层的通信
 typedef struct Input_Info
 {
-	GIType intype=GIType::None;
-	GPoint mouse_pos = { 0,0 };
-	GPoint screensize = { 30,90 };
-	GPoint basepoint = { 0,0 };
-	HANDLE winhandle = nullptr;
-	bool mouse_hit = false;
-	int onkey = 0;
+	GIType intype = GIType::None;	//输入类型
+	GPoint mouse_pos = { 0,0 };		//鼠标位置
+	GPoint screensize = { 30,90 };	//屏幕尺寸
+	GPoint basepoint = { 0,0 };		//用于计算鼠标落点的基坐标
+	HANDLE winhandle = nullptr;		//标准输入句柄
+	bool mouse_hit = false;			//是否按压鼠标左键
+	int onkey = 0;					//当前按压的键
 }GI_Msg;
 //类与渲染器的通信
 typedef struct Output_Info
 {
 	typedef struct Str_Info
 	{
-		string StrView ;//内容
-		GPoint pos;//位置
-		GOType type = GOType::Center;//输出格式
-		int offlen = 0;//偏移量
-	}Str_Info;
+		string StrView;					//文字内容
+		GPoint pos;						//位置
+		GOType type = GOType::Center;	//输出格式
+		int offlen = 0;					//偏移量
+	}Str_Info;//单条数据
 
-	vector<Str_Info>AllStrings;
+	vector<Str_Info>AllStrings;//储存输出请求的数组
 }GO_Msg;
 
 

@@ -122,8 +122,6 @@ void GTalker::DealInfo(GO_Msg& info)
 				node.second[index].pos =
 				{ (horizontal() - factlen) / 2, (vertical() - int(node.second.size())) / 2 + index };
 				break;
-			case GOType::NoBetween_Center:
-				break;
 			case GOType::GameHint:
 				node.second[index].pos =
 				{ (horizontal() - factlen) / 2 , (vertical() + 13) / 2 + 3 };

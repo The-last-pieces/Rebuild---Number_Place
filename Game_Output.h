@@ -28,6 +28,7 @@ private:
 	static mutex safelock;
 	static void ClearQueue(queue<GO_Msg>& tclear)
 	{
+		//处理绘图信息
 		if (tclear.empty())
 			return;
 		auto temp = tclear.front().AllStrings;
@@ -38,16 +39,17 @@ private:
 		}
 		tclear.pop();
 	}
-	static void Painter()
+	static void Painter()//渲染器
 	{
 		while (true)
 		{
+			//保证数据安全
 			safelock.lock();
 			ClearQueue(showqueue);
 			safelock.unlock();
 		}
 	}
-	static void backgroud();
+	static void backgroud();//生成背景
 private:
 	//防止意外的修改对象
 	GTalker() :keeppaint(Painter), keepback(backgroud)
@@ -71,7 +73,7 @@ public:
 		return Instance;
 	}
 	//根据string串渲染图像
-	void Render(GO_Msg info);//渲染器
+	void Render(GO_Msg info);//渲染器的公用接口
 };
 
 #define GOutput GTalker::getInstance()
