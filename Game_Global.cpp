@@ -1,44 +1,7 @@
 #include "Game_Input.h"
 #include "Game_Output.h"
-
-GB_Msg CreateMsg(double _sleeptime)
-{
-	//以秒位单位
-	GB_Msg rmsg;
-	rmsg.type = GMType::Sleep;
-	rmsg.ex.sleeptime = max(DWORD(0), DWORD(_sleeptime * 1000));
-	return rmsg;
-}
-GB_Msg CreateMsg(GResType ptr)
-{
-	GB_Msg rmsg;
-	rmsg.type = GMType::Change_View;
-	rmsg.ex.newshow = ptr;
-	return rmsg;
-}
-GB_Msg CreateMsg(ExInfo::NumInfo numinfo)
-{
-	GB_Msg rmsg;
-	rmsg.type = GMType::Change_View;
-	rmsg.ex.setnum = numinfo;
-	return rmsg;
-}
-GB_Msg CreateMsg(GSetType mode,GMType mtype)
-{
-	GB_Msg rmsg;
-	rmsg.type = mtype;
-	if (mtype == GMType::Change_Hard)
-		rmsg.ex.hard = mode;
-	if (mtype == GMType::Change_PMode)
-		rmsg.ex.pmode = mode;
-	return rmsg;
-}
-GB_Msg CreateMsg(GMType mtype)
-{
-	GB_Msg rmsg;
-	rmsg.type = mtype;
-	return rmsg;
-}
+#include "Game_MessageQueue.h"
+#include "Game_PInterface.h"
 
 queue<GO_Msg> GTalker::showqueue;
 mutex GTalker::safelock;
@@ -143,16 +106,6 @@ void GTalker::Render(GO_Msg info)
 	safelock.lock();
 	showqueue.push(info);
 	safelock.unlock();
-}
-
-int GTalker::horizontal()
-{
-	return GInput->Info.screensize.Horizontal;
-}
-
-int GTalker::vertical()
-{
-	return GInput->Info.screensize.Vertical;
 }
 
 

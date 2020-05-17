@@ -147,13 +147,18 @@
     <ClInclude Include="Game_Map.h" />
     <ClInclude Include="Game_MessageQueue.h" />
     <ClInclude Include="Game_Output.h" />
+    <ClInclude Include="Game_PInterface.h" />
     <ClInclude Include="Game_View.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game_Control.cpp" />
     <ClCompile Include="Game_Global.cpp" />
+    <ClCompile Include="Game_PInterface.cpp" />
     <ClCompile Include="Game_Main.cpp" />
     <ClCompile Include="Game_Map.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

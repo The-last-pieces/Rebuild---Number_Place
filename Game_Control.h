@@ -1,9 +1,25 @@
 #pragma once
 #include "Game_View.h"
-#include "Game_Map.h"
-
+//管理视图的类
 class GControl
 {
+public:
+	GControl();
+	~GControl();
+	void OnLoad()//对外公开的启动接口
+	{
+		while (true)
+		{
+			//抓取到可能有效的输入才进行处理
+			if (GInput->Update() && GInput->Info.intype != GIType::None)
+				DealInput();
+			GB_Msg ToDeal = GMsg->PopMsg();//获取队首消息
+			if (ToDeal.type == GMType::Exit_Process)//循环至游戏结束
+				break;
+			else
+				DealMsg(ToDeal);//处理所有类型的消息
+		}
+	}
 private:
 	GSetType Hard = GSetType::Choose_Easy;//游戏难度
 	GSetType PMode = GSetType::Choose_Standard;//游戏类型
@@ -91,6 +107,8 @@ private:
 			break;
 		case GMType::Change_View:
 			whichres = ToDeal.ex.newshow;
+			if (whichres == GResType::Play_OnGame)
+				GMsg->AddMsg(CreateMsg(GMType::MapInit));
 			if (GResources[whichres])
 			{
 				if (OnView)
@@ -116,6 +134,9 @@ private:
 				GMsg->AddMsg(CreateMsg(GMType::Rend));
 			}
 			break;
+		case GMType::MapInit:
+			GameMapInitialize();
+			break;
 		case GMType::Sleep:
 			Sleep(ToDeal.ex.sleeptime);
 		case GMType::NOP:
@@ -132,6 +153,7 @@ private:
 	}
 	void Render()
 	{
+		//提交绘图请求
 		if (!OnView)
 			return;
 		system("cls");
@@ -139,6 +161,7 @@ private:
 	}
 	void GameMapInitialize()
 	{
+		//数据初始化
 		if (whichres == GResType::Play_OnGame)
 		{
 			GPlay* temp = dynamic_cast<GPlay*>(OnView);
@@ -150,27 +173,6 @@ private:
 					temp->startgame = true;
 				}
 			}
-		}
-	}
-public:
-	GControl(); 
-	~GControl();
-	void OnLoad()
-	{
-		while (true)
-		{
-			GameMapInitialize();
-
-			//抓取到可能有效的输入才进行处理
-			GInput->Update();
-			if (GInput->Info.intype != GIType::None)
-				DealInput();
-			GB_Msg ToDeal = GMsg->PopMsg();//获取队首消息
-			if (ToDeal.type == GMType::Exit_Process)
-				break;//循环至游戏结束
-			else
-				DealMsg(ToDeal);//处理所有类型的消息
-
 		}
 	}
 };

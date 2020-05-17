@@ -39,6 +39,9 @@
     <ClInclude Include="Base_Lib.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Game_PInterface.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game_Main.cpp">
@@ -53,5 +56,11 @@
     <ClCompile Include="Game_Control.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Game_PInterface.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
 </Project>

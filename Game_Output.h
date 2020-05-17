@@ -1,31 +1,31 @@
 #pragma once
-#include "Game_MessageQueue.h"
+#include "Game_PInterface.h"
 //处理输出请求,封装为一个全局API
 class GTalker
 {
 	friend class autodelete;//自动销毁
+public:
+	static GTalker* getInstance()
+	{
+		//保持每个GInput同步
+		if (!Instance)
+			Instance = new GTalker;
+		return Instance;
+	}
+	//根据string串渲染图像
+	void Render(GO_Msg info);//渲染器的公用接口
 private:
 	//唯一实例化对象,编译期确定
 	static GTalker* Instance;
-private:
 	const int between_point = 4;//游标间距
 
 	thread keepback;
 	thread keeppaint;
-private:
-	static int vertical();
-	static int horizontal();
-	static void moveto(GPoint pos)
-	{
-		COORD temp;
-		temp.X = (SHORT)pos.Vertical;
-		temp.Y = (SHORT)pos.Horizontal;
-		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), temp);
-	}
-	void DealInfo(GO_Msg& info);//格式化处理
-
 	static queue<GO_Msg> showqueue;
 	static mutex safelock;
+private:
+	void DealInfo(GO_Msg& info);//格式化处理
+
 	static void ClearQueue(queue<GO_Msg>& tclear)
 	{
 		//处理绘图信息
@@ -64,16 +64,6 @@ private:
 		//释放线程资源
 	}
 	GTalker(const GTalker&) = delete;
-public:
-	static GTalker* getInstance()
-	{
-		//保持每个GInput同步
-		if (!Instance)
-			Instance = new GTalker;
-		return Instance;
-	}
-	//根据string串渲染图像
-	void Render(GO_Msg info);//渲染器的公用接口
 };
 
 #define GOutput GTalker::getInstance()

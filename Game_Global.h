@@ -58,10 +58,10 @@ enum class GMType
 	Change_View,//切换OnView
 	Change_Hard,//切换Hard
 	Change_PMode,//切换PMode
-	GetAnswer,//获取答案
 	Save,//存档
 	Load,//读档
 	Sleep,//休眠
+	MapInit,//初始化数据
 	NOP//空操作
 };
 //输出格式枚举
@@ -174,7 +174,3 @@ typedef struct Output_Info
 
 	vector<Str_Info>AllStrings;//储存输出请求的数组
 }GO_Msg;
-
-
-
-

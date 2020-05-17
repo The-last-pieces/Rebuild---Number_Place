@@ -1,38 +1,10 @@
 #pragma once
-#include "Game_MessageQueue.h"
+#include "Game_Global.h"
 
 //处理用户输入,封装为一个全局API
 class GListener
 {
 	friend class autodelete;//自动销毁
-private:
-	//唯一实例化对象,编译期确定
-	static GListener* Instance;
-private:
-	//防止意外的修改对象
-	GListener()
-	{
-		//将update加入子线程中
-		HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
-		DWORD mode;
-		GetConsoleMode(hStdin, &mode);
-		mode &= ~ENABLE_QUICK_EDIT_MODE;  //移除快速编辑模式
-		mode &= ~ENABLE_INSERT_MODE;      //移除插入模式
-		mode &= ~ENABLE_MOUSE_INPUT;	  //过滤其他鼠标输入
-		SetConsoleMode(hStdin, mode);
-
-		SetWindowLongPtrA(
-            GetConsoleWindow(),
-            GWL_STYLE,
-            GetWindowLongPtrA(GetConsoleWindow(),GWL_STYLE)
-            & ~WS_SIZEBOX & ~WS_MAXIMIZEBOX & ~WS_MINIMIZEBOX
-        );//锁定窗口大小
-	}
-	~GListener()
-	{
-		//释放线程资源
-	}
-	GListener(const GListener&) = delete;
 public:
 	//用于储存当前的输入数据
 	GI_Msg Info;
@@ -48,6 +20,10 @@ public:
 	//更新输入数据,若为可接受的输入则返回true
 	bool Update(void);
 private:
+	//唯一实例化对象,编译期确定
+	static GListener* Instance;
+private:
+	//具体的更新信息函数
 	inline HANDLE WinHandle()
 	{
 		return GetStdHandle(STD_OUTPUT_HANDLE);
@@ -130,6 +106,31 @@ private:
 		ClientToScreen(GetConsoleWindow(), &rect);
 		Info.basepoint = { rect.x,rect.y };
 	}
+private:
+	//防止意外的修改对象
+	GListener()
+	{
+		//将update加入子线程中
+		HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+		DWORD mode;
+		GetConsoleMode(hStdin, &mode);
+		mode &= ~ENABLE_QUICK_EDIT_MODE;  //移除快速编辑模式
+		mode &= ~ENABLE_INSERT_MODE;      //移除插入模式
+		mode &= ~ENABLE_MOUSE_INPUT;	  //过滤其他鼠标输入
+		SetConsoleMode(hStdin, mode);
+
+		SetWindowLongPtrA(
+			GetConsoleWindow(),
+			GWL_STYLE,
+			GetWindowLongPtrA(GetConsoleWindow(), GWL_STYLE)
+			& ~WS_SIZEBOX & ~WS_MAXIMIZEBOX & ~WS_MINIMIZEBOX
+			);//锁定窗口大小
+	}
+	~GListener()
+	{
+		//释放线程资源
+	}
+	GListener(const GListener&) = delete;
 };
 
 #define GInput GListener::getInstance()
