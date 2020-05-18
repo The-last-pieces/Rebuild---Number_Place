@@ -127,7 +127,7 @@ void GMessageQueue::AddMsg(GB_Msg info)
 GB_Msg GMessageQueue::PopMsg()
 {
 	if (MQueue.empty())
-		return { GMType::NOP };
+		return CreateMsg(GMType::NOP);
 	GB_Msg temp = MQueue.front();
 	MQueue.pop();
 

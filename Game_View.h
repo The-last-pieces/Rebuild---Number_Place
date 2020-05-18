@@ -6,6 +6,7 @@ class GView
 {
 public:
 	bool OnMe = false;
+protected:
 	GResType Father = GResType::Menu_Main;
 public:
 	virtual GO_Msg Stringify() = 0;
@@ -49,17 +50,12 @@ class GChoose :public GView
 private:
 	string Column;
 	string Explanation;
-private:
-	vector<GB_Msg> BondAction = { CreateMsg(GMType::NOP) };//绑定的附加事件
+	vector<GB_Msg> BondAction;//绑定的附加事件
 public:
 	GChoose(string _Column, string _Explanation, vector<GB_Msg> _BondAction) :
 		Column(_Column), Explanation(_Explanation), BondAction(_BondAction)
 	{}
 
-	string GetExplanation()
-	{
-		return Explanation;
-	}
 	GO_Msg Stringify()
 	{
 		GO_Msg info;
@@ -67,7 +63,7 @@ public:
 		if (OnMe)
 		{
 			temp = string("--> ") + temp + string(" <--");
-			info.AllStrings.push_back({ GetExplanation(),{},GOType::Explanation });
+			info.AllStrings.push_back({ Explanation,{},GOType::Explanation });
 		}
 		info.AllStrings.push_back({ temp });
 		return info;
@@ -104,10 +100,6 @@ private:
 public:
 	GLable(vector<GSet> _sets, GMType _LableType) :AllSettings(_sets), SetsCount(_sets.size()), LableType(_LableType) {}
 public:
-	string GetExplanation()
-	{
-		return AllSettings[NowSelect].Explanation;
-	}
 	GO_Msg Stringify()
 	{
 		GO_Msg info;
@@ -136,6 +128,11 @@ public:
 		GMsg->AddMsg(CreateMsg(AllSettings[NowSelect].Mode, LableType));
 		GMsg->AddMsg(CreateMsg(GMType::Rend));
 		return true;
+	}
+private:
+	string GetExplanation()
+	{
+		return AllSettings[NowSelect].Explanation;
 	}
 };
 

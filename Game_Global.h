@@ -54,7 +54,7 @@ enum class GMType
 {
 	Exit_Process,//退出进程
 	Clear,//清空画面
-	Rend,//添加画面(不覆盖)
+	Rend,//添加画面(覆盖)
 	Change_View,//切换OnView
 	Change_Hard,//切换Hard
 	Change_PMode,//切换PMode
@@ -115,40 +115,38 @@ enum class GResType
 //一些公用类的定义
 
 //游戏坐标点
-class GPoint
+typedef struct GPoint
 {
-public:
 	int Vertical = 0;//从上至下距离
 	int Horizontal = 0;//从左至右距离
-};
+}GPoint;
 
 const int FPS = 10;//刷新率
 
 //类之间的通信
-typedef union ExInfo
-{
-	typedef struct
-	{
-		GPoint pos;
-		int num = 0;
-	}NumInfo;
-
-	NumInfo setnum;
-
-	GResType newshow;
-	GSetType hard;
-	GSetType pmode;
-	DWORD sleeptime;
-
-	ExInfo()
-	{
-		newshow = GResType::Menu_Main;
-	}
-}ExInfo;//额外信息
 typedef struct Behavior_Info
 {
+	union ExInfo
+	{
+		typedef struct
+		{
+			GPoint pos;
+			int num = 0;
+		}NumInfo;
+
+		NumInfo setnum;
+
+		GResType newshow;
+		GSetType hard;
+		GSetType pmode;
+		DWORD sleeptime;
+
+		ExInfo()
+		{
+			sleeptime = 0;
+		}
+	}ex;//额外信息
 	GMType type = GMType::NOP;
-	ExInfo ex;
 }GB_Msg;
 //类与用户层的通信
 typedef struct Input_Info

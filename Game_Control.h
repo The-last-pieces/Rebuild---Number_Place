@@ -29,7 +29,7 @@ private:
 
 	const string savepath = R"(.\data\save.txt)";
 private:
-	void SaveProcess()
+	bool SaveProcess()
 	{
 		if (GResources[GResType::Play_OnGame])
 		{
@@ -41,7 +41,7 @@ private:
 					std::ofstream fs(savepath);
 
 					if (!fs)
-						return;
+						return false;
 
 					fs << (int)mp->OnMap->hard << ' ' << (int)mp->OnMap->mode << '\n';
 					for (int i = 0; i < 9; ++i)
@@ -54,10 +54,11 @@ private:
 					}
 
 					fs.close();
-					
+					return true;
 				}
 			}
 		}
+		return false;
 	}
 	bool LoadProcess()
 	{
