@@ -23,6 +23,8 @@ private:
 	thread keeppaint;
 	static queue<GO_Msg> showqueue;
 	static mutex safelock;
+
+	static bool OnRunning;
 private:
 	void DealInfo(GO_Msg& info);//格式化处理
 
@@ -41,7 +43,7 @@ private:
 	}
 	static void Painter()//渲染器
 	{
-		while (true)
+		while (OnRunning)
 		{
 			//保证数据安全
 			safelock.lock();
@@ -56,12 +58,16 @@ private:
 	{
 		system("mode con lines=30 cols=90");
 		SetConsoleTitle(TEXT("Sudoku"));
+
+		mciSendStringW(L"setaudio mp3 volume to 50", NULL, 0, NULL);
+		PlayMusic(L"welcome.mp3", false);
 		keepback.detach();
 		keeppaint.detach();
 	}
 	~GTalker()
 	{
 		//释放线程资源
+		OnRunning = false;
 	}
 	GTalker(const GTalker&) = delete;
 };

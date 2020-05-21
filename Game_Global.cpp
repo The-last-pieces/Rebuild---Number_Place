@@ -8,6 +8,7 @@ mutex GTalker::safelock;
 
 //三大全局对象的实例化
 GTalker* GTalker::Instance = new GTalker;
+bool GTalker::OnRunning = true;
 GListener* GListener::Instance = new GListener;
 GMessageQueue* GMessageQueue::Instance = new GMessageQueue;
 
@@ -15,8 +16,8 @@ void GTalker::backgroud()
 {
 	const string backstring = "@%&";
 	//绘制动态背景
-	int offpos = 0;
-	while (true)
+	int offpos = 0; 
+	while (OnRunning)
 	{
 		++offpos;
 		Sleep(1000 / FPS );

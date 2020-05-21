@@ -20,6 +20,7 @@
 
 using std::vector;
 using std::string;
+using std::wstring;
 using std::stack;
 using std::array;
 using std::pair;
@@ -33,11 +34,14 @@ using std::stringstream;
 using std::swap;
 using std::max;
 using std::endl;
+using std::to_wstring;
 
 using std::cout;
 using std::cin;
 
 extern "C" WINBASEAPI HWND WINAPI GetConsoleWindow();
+
+#pragma comment (lib, "winmm.lib") 
 
 //游戏设置的枚举
 

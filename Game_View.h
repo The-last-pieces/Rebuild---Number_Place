@@ -164,6 +164,7 @@ public:
 
 	void CreateMap(GSetType hard,GSetType mode)
 	{
+		PlayMusic(L"play.mp3");
 		OnMap = new GMap(hard,mode);
 		GMsg->AddMsg(CreateMsg(GMType::Rend));
 	}
@@ -207,6 +208,8 @@ public:
 		}
 		if (OnMap->IsWin())
 		{
+			PlayMusic(L"victory.mp3", false, 0);
+
 			GOutput->Render(this->Stringify());
 
 			GO_Msg msg;

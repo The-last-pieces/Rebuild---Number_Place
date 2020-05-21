@@ -130,6 +130,8 @@ GControl::GControl()
 	Render();
 	_getch();
 
+	PlayMusic(L"menu.mp3");
+
 	OnView= GResources[GResType::Menu_Main];
 	Render();
 }
