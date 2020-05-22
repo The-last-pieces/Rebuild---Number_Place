@@ -125,7 +125,7 @@ typedef struct GPoint
 	int Horizontal = 0;//从左至右距离
 }GPoint;
 
-const int FPS = 10;//刷新率
+const int FPS = 20;//刷新率
 
 //类之间的通信
 typedef struct Behavior_Info

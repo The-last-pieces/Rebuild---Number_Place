@@ -63,6 +63,11 @@ private:
 		PlayMusic(L"welcome.mp3", false);
 		keepback.detach();
 		keeppaint.detach();
+
+		CONSOLE_CURSOR_INFO CursorInfo;
+		GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CursorInfo);//获取控制台光标信息
+		CursorInfo.bVisible = false; //隐藏控制台光标
+		SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CursorInfo);//设置控制台光标状态
 	}
 	~GTalker()
 	{

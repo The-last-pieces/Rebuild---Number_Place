@@ -55,7 +55,7 @@ GControl::GControl()
 		{
 			{ "简单模式","提供35个提示",GSetType::Choose_Easy },
 			{ "一般模式","提供30个提示",GSetType::Choose_Normal },
-			{ "大师模式","提供25个提示",GSetType::Choose_Master }
+			{ "大师模式","提供25个提示(警告,该模式对电脑算力要求较高)",GSetType::Choose_Master }
 		},GMType::Change_Hard
 	};
 	GResources[GResType::Lable_SetMode] = new GLable{
