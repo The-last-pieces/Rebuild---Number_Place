@@ -34,19 +34,19 @@ GB_Msg CreateMsg(GMType mtype)
 
 void PlayMusic(const wstring& msc, bool ifrepeat, double start)
 {
-	//return;
 	static wstring now = L"";
-	wstring cmd = L"open data\\" + msc + L" alias msc";
+	wstring cmd = L"open data\\";
+	cmd += msc + L" alias msc";
 
 	if (!msc.empty() && msc != now) {
-		mciSendString(L"close msc", NULL, 0, NULL);//关闭之前的音乐
+		mciSendStringW(L"close msc", NULL, 0, NULL);//关闭之前的音乐
 
-		mciSendString(cmd.c_str(), NULL, 0, NULL);//alias后为设备名称
+		mciSendStringW(cmd.c_str(), NULL, 0, NULL);//alias后为设备名称
 
-		cmd.clear();
-		cmd = cmd + L"play msc" + L" from " + to_wstring(int(start * 1000));
-		ifrepeat && (cmd += L" repeat", 0);
-		mciSendString(cmd.c_str(), NULL, 0, NULL);
+		std::wstringstream ss;
+		ss << L"play msc from " << int(start * 1000);
+		ifrepeat && (ss << L" repeat", 0);
+		mciSendStringW(ss.str().c_str(), NULL, 0, NULL);//播放新音乐
 	}
 }
 

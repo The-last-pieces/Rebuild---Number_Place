@@ -34,7 +34,6 @@ using std::stringstream;
 using std::swap;
 using std::max;
 using std::endl;
-using std::to_wstring;
 
 using std::cout;
 using std::cin;
