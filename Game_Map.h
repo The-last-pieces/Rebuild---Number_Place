@@ -114,7 +114,11 @@ public:
 				}
 
 				stringstream tempstr;
-				tempstr << "正在尝试生成数据:" << string(mt / (mload / 20), '#') << string(((mload - mt) / (mload / 20)), ' ') << "<>"[(mt / 50) % 2] << "    初始数:" << base << "个   ";
+				tempstr << "正在尝试生成数据:"
+					<< string(mt / (mload / 20), '#')
+					<< string(((mload - mt) / (mload / 20)), ' ')
+					<< "<>"[(mt / 50) % 2]
+					<< "    初始数:" << base << "个   ";
 				msg.AllStrings.push_back({ tempstr.str() ,{1,1},GOType::SelfDef });
 				msg.AllStrings.push_back({ "//初始数小于30时生成速度会明显降低,请耐心等待" ,{2,2},GOType::SelfDef });
 
@@ -300,7 +304,20 @@ public:
 	}
 	bool WorkOut()
 	{
-		return worker.getanswer(map_info);
+		Gcanans();
+		vector<GPoint>temp;
+		for (int x = 0; x < 9; ++x) {
+			for (int y = 0; y < 9; ++y) {
+				if (map_info[x][y] != worker.canans[x][y]) {
+					temp.push_back({ x,y });
+				}
+			}
+		}
+		if (!temp.empty()) {
+			GPoint pos = temp[rand() % temp.size()];
+			SetNumber(pos, worker.canans[pos.Vertical][pos.Horizontal]);
+		}
+		return temp.size();
 	}
 	bool IsWin()
 	{
